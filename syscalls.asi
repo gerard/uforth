@@ -1,0 +1,32 @@
+	.macro exit status
+		mov	r0, \status
+		mov	r7, #1
+		svc	#0
+	.endm
+	.macro read fd, buf, count
+		mov	r2, \count
+		mov	r1, \buf
+		mov	r0, \fd
+		mov	r7, #3
+		svc	#0
+	.endm
+	.macro write fd, buf, count
+		mov	r2, \count
+		mov	r1, \buf
+		mov	r0, \fd
+		mov	r7, #4
+		svc	#0
+	.endm
+	.macro brk addr
+		mov	r0, \addr
+		mov	r7, #45
+		svc	#0
+	.endm
+	.macro fcntl fd, cmd, arg
+		mov	r2, \arg
+		mov	r1, \cmd
+		mov	r0, \fd
+		mov	r7, #55
+		svc	#0
+	.endm
+
