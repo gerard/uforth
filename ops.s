@@ -1,7 +1,7 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
 
-	.macro vtest reg bits
+	.macro vtest reg
 		tst	\reg, #0xff
 		tsteq	\reg, #0xf00
 		beq	panic
