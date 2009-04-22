@@ -11,6 +11,7 @@
 	.align	2
 	.global op_add
 	.global	op_dot
+	.global	op_dots
 
 @ All these ops have just one parameter, which is global: the stack top (vsp)
 op_add:
@@ -30,5 +31,23 @@ op_dot:
 	ldr	r0, [vsp, #-4]!
 	bl	print_num_lf
 	write	#1, r0, #16
+	pop	{lr}
+	bx	lr
+
+op_dots:
+	push	{lr}
+	vtest	vsp
+	bic	r1, vsp, #0xff
+	bic	r1, r1, #0xf00
+.Ldots_repeat:
+	cmp	r1, vsp
+	beq	.Ldots_end
+	ldr	r0, [r1], #4
+	push	{r1}
+	bl	print_num_lf
+	write	#1, r0, #16
+	pop	{r1}
+	b	.Ldots_repeat
+.Ldots_end:
 	pop	{lr}
 	bx	lr

@@ -5,6 +5,8 @@
 	.asciz	"."
 .LCOP_ADD:
 	.asciz	"+"
+.LCOP_DOTS:
+	.asciz	".s"
 	.text
 	.align	2
 	.global init_symbols
@@ -24,6 +26,12 @@ init_symbols:
 	ldr	r1, .LOP_ADD_ID
 	ldr	r2, .LOP_ADD_OP
 	bl	init_sym
+	ldr	r1, .LOP_DOTS_ID
+	ldr	r2, .LOP_DOTS_OP
+	bl	init_sym
+	mov	r0, #0
+	str	r0, [stp], #4
+	str	r0, [stp], #4
 	bic	stp, stp, #0xff
 	bic	stp, stp, #0xf00
 	pop	{lr}
@@ -34,8 +42,12 @@ init_symbols:
 	.word	.LCOP_DOT
 .LOP_ADD_ID:
 	.word	.LCOP_ADD
+.LOP_DOTS_ID:
+	.word	.LCOP_DOTS
 
 .LOP_DOT_OP:
 	.word	op_dot
 .LOP_ADD_OP:
 	.word	op_add
+.LOP_DOTS_OP:
+	.word	op_dots
