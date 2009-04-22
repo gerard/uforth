@@ -75,8 +75,10 @@ parse_symbol:
 	bl	strcmp
 	@ If succeded, run the associated method (eq), otherwise repeat (ne)
 	ldreq	r1, [stp], #4
+	push	{r0}
 	moveq	lr, pc
 	bxeq	r1
+	pop	{r0}
 	bne	.Lparse_symbol_repeat
 .Lparse_symbol_end:
 	bic	stp, #0xff
