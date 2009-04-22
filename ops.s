@@ -10,9 +10,9 @@
 
 	.text
 	.align	2
-	.global op_add
-	.global	op_dot
-	.global	op_dots
+	.global	op_add		@ NAME: "+"
+	.global	op_dot		@ NAME: "."
+	.global	op_dots		@ NAME: ".s"
 
 @ All these ops have just one parameter, which is global: the stack top (vsp)
 op_add:
