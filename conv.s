@@ -1,16 +1,14 @@
 	.align	2
 	.text
-	.global	print_num_lf
+	.global	print_num
 
 @ In:
 @	* r0 (uint32_t)	=> Number to convert
 @ Out:
 @	* r0 (char *)	=> Addres to a 16 bytes buffer
-print_num_lf:
+print_num:
 	push	{lr}
 	ldr	r1, .Lbuffer_word
-	mov	r3, #0xa
-	strb	r3, [r1, #15]
 	mov	r3, #14
 .Lrestart:
 	and	r2, r0, #0xf

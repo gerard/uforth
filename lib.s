@@ -1,3 +1,4 @@
+	.include	"syscalls.asi"
 	.macro cmpchar lower upper
 		cmp	r0, \lower
 		bmi	.Lcmp_chars_end
@@ -11,6 +12,7 @@
 	.global	isdigit
 	.global	strcmp
 	.global strncpy
+	.global putchar
 
 isdigit:
 	cmpchar	#0x30, #0x39
@@ -47,3 +49,13 @@ strcmp:
 	cmpne	r4, #0xA
 .Lstrcmp_end:
 	bx	lr
+
+putchar:
+	ldr	r1, .Lbuffer_byte
+	str	r0, [r1]
+	write	#1, r1, #1
+	bx	lr
+	
+.Lbuffer_byte:
+	.word	buffer_1b
+	.comm	buffer_1b, 1, 1

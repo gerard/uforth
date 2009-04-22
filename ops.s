@@ -29,8 +29,10 @@ op_dot:
 	push	{lr}
 	vtest	vsp
 	ldr	r0, [vsp, #-4]!
-	bl	print_num_lf
+	bl	print_num
 	write	#1, r0, #16
+	mov	r0, #0xa
+	bl	putchar
 	pop	{lr}
 	bx	lr
 
@@ -44,10 +46,14 @@ op_dots:
 	beq	.Ldots_end
 	ldr	r0, [r1], #4
 	push	{r1}
-	bl	print_num_lf
+	bl	print_num
 	write	#1, r0, #16
+	mov	r0, #0x20
+	bl	putchar
 	pop	{r1}
 	b	.Ldots_repeat
 .Ldots_end:
+	mov	r0, #0xa
+	bl	putchar
 	pop	{lr}
 	bx	lr
