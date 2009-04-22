@@ -1,5 +1,6 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
+	.include	"lib.asi"
 
 	.macro vtest reg
 		tst	\reg, #0xff
@@ -31,8 +32,7 @@ op_dot:
 	ldr	r0, [vsp, #-4]!
 	bl	print_num
 	write	#1, r0, #16
-	mov	r0, #0xa
-	bl	putchar
+	putchar	#0xa
 	pop	{lr}
 	bx	lr
 
@@ -48,12 +48,10 @@ op_dots:
 	push	{r1}
 	bl	print_num
 	write	#1, r0, #16
-	mov	r0, #0x20
-	bl	putchar
+	putchar #0x20
 	pop	{r1}
 	b	.Ldots_repeat
 .Ldots_end:
-	mov	r0, #0xa
-	bl	putchar
+	putchar #0xa
 	pop	{lr}
 	bx	lr
