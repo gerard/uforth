@@ -37,23 +37,12 @@ parse_decimal:
 @ This will return Z set if no symbol was found
 parse_symbol:
 	push	{lr}
-.Lparse_symbol_repeat:
-	@ Check operator ID
-	ldr	r1, [stp], #4
-	cmp	r1, #0
+	bl	lookup_symbol
 	beq	.Lparse_symbol_end_fail
-	bl	strcmp
-	@ If succeded, run the associated method (eq), otherwise repeat (ne)
-	bne	.Lparse_symbol_repeat
-	ldr	r1, [stp], #4
-	push	{r0}
 	mov	lr, pc
-	bx	r1
-	pop	{r0}
+	bx	r0
 	movs	stp, stp	@ Ugly way to unset Z
 .Lparse_symbol_end_fail:
-	bic	stp, #0xff
-	bic	stp, #0xf00
 	pop	{lr}
 	bx	lr
 
