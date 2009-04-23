@@ -7,7 +7,6 @@
 @ Out:
 @	* r0 (char *)	=> Addres to a 16 bytes buffer
 print_num:
-	push	{lr}
 	ldr	r1, .Lbuffer_word
 	mov	r3, #14
 .Lrestart:
@@ -22,7 +21,6 @@ print_num:
 
 	ldr	r0, .Lbuffer_word
 	add	r0, r0, r3
-	pop	{lr}
 	bx	lr
 
 .Lbuffer_word:
