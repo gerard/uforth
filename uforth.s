@@ -1,9 +1,5 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
-	.section	.rodata
-	.align 2
-.LCnewline:
-	.ascii	"\012"
 	.text
 	.align	2
 	.global	_start
@@ -134,7 +130,3 @@ _start:
 	b	panic
 .Lend:
 	exit	#0
-
-	.align	2
-.Lnewline:
-	.word	.LCnewline
