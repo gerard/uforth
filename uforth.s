@@ -66,9 +66,6 @@ reduce_token:
 	pop	{lr}
 	bx	lr
 
-parse_error:
-	bx	lr
-
 @ Entry point
 _start:
 	@ TODO: We need to be sure that the initial brk point is on a 1KB
