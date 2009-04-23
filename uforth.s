@@ -37,7 +37,8 @@ parse_decimal:
 @ This will return Z set if no symbol was found
 parse_symbol:
 	push	{lr}
-	bl	lookup_symbol
+	bl	symtable_lookup
+	bl	symtable_restart
 	beq	.Lparse_symbol_end_fail
 	mov	lr, pc
 	bx	r0
