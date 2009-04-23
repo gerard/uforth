@@ -7,7 +7,7 @@ OBJS=$(patsubst %.s,%.o,$(SRCS))
 
 all: $(BIN)
 
-init_sym.s: gen_symboltable.pl
+init_sym.s: gen_symboltable.pl ops.s
 	./gen_symboltable.pl > $@
 
 $(BIN): $(OBJS)
