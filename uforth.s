@@ -1,5 +1,6 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
+	.include	"lib.asi"
 	.text
 	.align	2
 	.global	_start
@@ -7,35 +8,6 @@
 
 panic:
 	exit	#1
-
-@ Input:  bfp! (global)
-@ Output: r0 (*token)
-@	   Z (valid)
-get_token:
-	mov	r1, #0
-	ldrb	r0, [bfp]
-	movs	r0, r0
-	beq	.Lget_token_end
-	cmp	r0, #0x20		@ ' '
-	addeq	bfp, #1
-	beq	get_token
-.Lget_token_getchar:
-	ldrb	r0, [bfp, r1]
-	movs	r0, r0
-	beq	.Lget_token_end
-	cmp	r0, #0x20
-	beq	.Lget_token_end
-	cmp	r0, #0xA
-	beq	.Lget_token_end
-	add	r1, #1
-	cmp	r1, #8
-	beq	.Lget_token_end
-	b	.Lget_token_getchar
-.Lget_token_end:
-	cmp	r1, #0
-	mov	r0, bfp
-	add	bfp, bfp, r1
-	bx	lr
 
 @ r0 => (char *) r1 => length of string
 parse_decimal:
@@ -118,7 +90,7 @@ _start:
 	cmp	r0, #0x100
 	beq	.Lerror
 .Lrepeat:
-	bl	get_token
+	strtok	#0x20
 	beq	.Lreadline
 	bl	reduce_token
 	b	.Lrepeat

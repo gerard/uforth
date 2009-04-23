@@ -2,3 +2,7 @@
 		mov	r0, \c
 		bl	putchar
 	.endm
+	.macro strtok delim
+		mov	r0, \delim
+		bl	strtok
+	.endm

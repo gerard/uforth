@@ -1,4 +1,5 @@
 	.include	"syscalls.asi"
+	.include	"regdefs.asi"
 	.macro cmpchar lower upper
 		cmp	r0, \lower
 		bmi	.Lcmp_chars_end
@@ -12,6 +13,7 @@
 	.global	isdigit
 	.global	strcmp
 	.global strncpy
+	.global strtok
 	.global putchar
 
 isdigit:
@@ -48,6 +50,36 @@ strcmp:
 	cmpne	r5, #0x20
 	cmpne	r4, #0xA
 .Lstrcmp_end:
+	bx	lr
+
+@ Input:  bfp! (global)
+@ Input:  r0 (delim)
+@ Output: r0 (*token)
+@	   Z (valid)
+strtok:
+	mov	r1, #0
+	ldrb	r2, [bfp]
+	movs	r2, r2
+	beq	.Lstrtok_end
+	cmp	r2, r0
+	addeq	bfp, #1
+	beq	strtok
+.Lstrtok_getchar:
+	ldrb	r2, [bfp, r1]
+	movs	r2, r2
+	beq	.Lstrtok_end
+	cmp	r2, r0
+	beq	.Lstrtok_end
+	cmp	r2, #0xA
+	beq	.Lstrtok_end
+	add	r1, #1
+	cmp	r1, #8
+	beq	.Lstrtok_end
+	b	.Lstrtok_getchar
+.Lstrtok_end:
+	cmp	r1, #0
+	mov	r0, bfp
+	add	bfp, bfp, r1
 	bx	lr
 
 putchar:
