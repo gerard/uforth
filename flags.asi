@@ -4,3 +4,11 @@
 	.macro Z_SET
 		cmp	bfp, bfp
 	.endm
+	.macro Z_REVERT
+		beq	.LZ_REVERT_CLEAR
+		Z_SET
+		b	.LZ_REVERT_END
+	.LZ_REVERT_CLEAR:
+		Z_CLEAR
+	.LZ_REVERT_END:
+	.endm

@@ -27,8 +27,11 @@ symtable_run:
 	push	{stp, lr}
 	ldr	r0, [stp, #4]
 	cmp	r0, #0
+	beq	.Lsymtable_run_end
 	mov	lr, pc
 	bx	r0
+	Z_CLEAR
+.Lsymtable_run_end:
 	pop	{stp, lr}
 	bx	lr
 

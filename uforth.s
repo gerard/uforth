@@ -1,6 +1,7 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
 	.include	"lib.asi"
+	.include	"flags.asi"
 	.text
 	.align	2
 	.global	_start
@@ -31,6 +32,7 @@ parse_decimal:
 	str	r2, [vsp], #4
 .Lparse_decimal_error:
 	movs	r0, r1
+	Z_REVERT
 	pop	{lr}
 	bx	lr
 
@@ -76,6 +78,9 @@ _start:
 	strtok	#0x20
 	beq	.Lreadline
 	bl	reduce_token
+	bne	.Lrepeat
+	putchar #0x3f
+	putchar #0xa
 	b	.Lrepeat
 .Lerror:
 	fcntl	#0, #4, #00004000	@ sdtin, F_SETFL, O_NONBLOCK
