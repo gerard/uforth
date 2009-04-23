@@ -11,7 +11,9 @@
 	.text
 	.align	2
 	.global	op_add		@ NAME: "+"
+	.global	op_mult		@ NAME: "*"
 	.global	op_dot		@ NAME: "."
+	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
 
 @ All these ops have just one parameter, which is global: the stack top (vsp)
@@ -24,6 +26,15 @@ op_add:
 	str	r0, [vsp], #4
 	bx	lr
 
+op_mult:
+	vtest	vsp
+	ldr	r1, [vsp, #-4]!
+	vtest	vsp
+	ldr	r2, [vsp, #-4]!
+	mul	r0, r1, r2
+	str	r0, [vsp], #4
+	bx	lr
+
 op_dot:
 	push	{lr}
 	vtest	vsp
@@ -33,6 +44,12 @@ op_dot:
 	putchar	#0xa
 	pop	{lr}
 	bx	lr
+
+op_dup:
+	vtest	vsp
+	ldr	r0, [vsp, #-4]
+	str	r0, [vsp], #4
+	bx lr
 
 op_dots:
 	push	{lr}
