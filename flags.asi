@@ -1,0 +1,6 @@
+	.macro Z_CLEAR
+		movs	bfp, bfp
+	.endm
+	.macro Z_SET
+		cmp	bfp, bfp
+	.endm

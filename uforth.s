@@ -34,16 +34,12 @@ parse_decimal:
 	pop	{lr}
 	bx	lr
 
-@ This will return Z set if no symbol was found
+@ This will return Z set if no symbol was found (via symtable_run)
 parse_symbol:
 	push	{lr}
 	bl	symtable_lookup
+	blne	symtable_run
 	bl	symtable_restart
-	beq	.Lparse_symbol_end_fail
-	mov	lr, pc
-	bx	r0
-	movs	stp, stp	@ Ugly way to unset Z
-.Lparse_symbol_end_fail:
 	pop	{lr}
 	bx	lr
 
