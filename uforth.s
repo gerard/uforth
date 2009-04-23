@@ -37,6 +37,7 @@ get_token:
 	add	bfp, bfp, r1
 	bx	lr
 
+@ r0 => (char *) r1 => length of string
 parse_decimal:
 	push	{lr}
 	mov	r5, r0
@@ -61,22 +62,24 @@ parse_decimal:
 	pop	{lr}
 	bx	lr
 
+@ This will return Z set if no symbol was found
 parse_symbol:
 	push	{lr}
 .Lparse_symbol_repeat:
 	@ Check operator ID
 	ldr	r1, [stp], #4
 	cmp	r1, #0
-	beq	.Lparse_symbol_end
+	beq	.Lparse_symbol_end_fail
 	bl	strcmp
 	@ If succeded, run the associated method (eq), otherwise repeat (ne)
-	ldreq	r1, [stp], #4
-	push	{r0}
-	moveq	lr, pc
-	bxeq	r1
-	pop	{r0}
 	bne	.Lparse_symbol_repeat
-.Lparse_symbol_end:
+	ldr	r1, [stp], #4
+	push	{r0}
+	mov	lr, pc
+	bx	r1
+	pop	{r0}
+	movs	stp, stp	@ Ugly way to unset Z
+.Lparse_symbol_end_fail:
 	bic	stp, #0xff
 	bic	stp, #0xf00
 	pop	{lr}
@@ -84,12 +87,10 @@ parse_symbol:
 
 reduce_token:
 	push	{lr}
-	mov	r2, r0
-	ldrb	r0, [r2]
-	bl	isdigit
-	mov	r0, r2
+	push	{r0, r1}
+	bl	parse_symbol
+	pop	{r0, r1}
 	bleq	parse_decimal
-	blne	parse_symbol
 	pop	{lr}
 	bx	lr
 
