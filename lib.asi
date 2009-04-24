@@ -10,3 +10,9 @@
 		mov	r0, \increment
 		bl	sbrk
 	.endm
+	.macro strncpy dest, src, n
+		mov	r2, \n
+		mov	r1, \src
+		mov	r0, \dest
+		bl	strncpy
+	.endm
