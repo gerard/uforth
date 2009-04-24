@@ -15,6 +15,7 @@
 	.global strncpy
 	.global strtok
 	.global putchar
+	.global	sbrk
 
 isdigit:
 	cmpchar	#0x30, #0x39
@@ -88,6 +89,15 @@ putchar:
 	write	#1, r1, #1
 	bx	lr
 	
+sbrk:
+	mov	r1, r0
+	brk	#0
+	mov	r2, r0
+	add	r0, r1
+	brk	r0
+	mov	r0, r2
+	bx	lr
+
 .Lbuffer_byte:
 	.word	buffer_1b
 	.comm	buffer_1b, 1, 1

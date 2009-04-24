@@ -6,3 +6,7 @@
 		mov	r0, \delim
 		bl	strtok
 	.endm
+	.macro sbrk increment
+		mov	r0, \increment
+		bl	sbrk
+	.endm

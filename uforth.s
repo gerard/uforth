@@ -58,16 +58,12 @@ reduce_token:
 _start:
 	@ TODO: We need to be sure that the initial brk point is on a 1KB
 	@       boundary
-	brk	#0
+	sbrk	#0x1000
 	mov	vsp, r0
-	add	r0, #0x1000
-	brk	r0
+	sbrk	#0x1000
 	mov	stp, r0
-	add	r0, #0x1000
-	brk	r0
+	sbrk	#0x100
 	mov	bfp, r0
-	add	r0, #0x100
-	brk	r0
 	bl	init_symbols
 .Lreadline:
 	bic	bfp, bfp, #0xff
