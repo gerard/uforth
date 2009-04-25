@@ -52,6 +52,14 @@ op_colon_helpers_pop_lr:
 	pop	{lr}
 op_colon_helpers_bx_lr:
 	bx	lr
+op_colon_helpers_mov_r0_0:
+	mov	r0, #0
+op_colon_helpers_orr_r0_imm:
+	orr	r0, #0
+op_colon_helpers_bx_r0:
+	bx	r0
+op_colon_helpers_mov_lr_pc:
+	mov	lr, pc
 
 op_colon:
 	push	{lr}
@@ -78,6 +86,57 @@ op_colon:
 	str	r0, [r4]
 	ldr	r1, op_colon_helpers_push_lr
 	str	r1, [r0], #4
+	ldr	r1, op_colon_helpers_mov_r0_0
+	str	r1, [r0], #4
+
+	@ The tricky part, we look for the symbol, we load its address and then
+	@ we would need to generate the code to load it.  The only way I come
+	@ up is byte by byte.  We mask the stuff we need and then we modify an
+	@ orr instruction which gets emitted.
+	@ This can be done in a cleaner way, but lets not overdoit in the first
+	@ try.
+	push	{r0}
+	strtok	#0x20
+	bl	symtable_restart
+	bl	symtable_lookup
+	ldr	r2, [stp, #4]
+	pop	{r0}
+
+	# LSB
+	and	r3, r2, #0xff
+	ldr	r1, op_colon_helpers_orr_r0_imm
+	orr	r1, r3
+	str	r1, [r0], #4
+
+	ror	r2, #8
+	and	r3, r2, #0xff
+	ldr	r1, op_colon_helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0xc00
+	str	r1, [r0], #4
+
+	ror	r2, #8
+	and	r3, r2, #0xff
+	ldr	r1, op_colon_helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0x800
+	str	r1, [r0], #4
+
+	# MSB
+	ror	r2, #8
+	and	r3, r2, #0xff
+	ldr	r1, op_colon_helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0x400
+	str	r1, [r0], #4
+
+	# r0 is finally constructed, branch and link
+	ldr	r1, op_colon_helpers_mov_lr_pc
+	str	r1, [r0], #4
+	ldr	r1, op_colon_helpers_bx_r0
+	str	r1, [r0], #4
+
+	@ We are done, close the subroutine with pop lr + bx lr
 	ldr	r1, op_colon_helpers_pop_lr
 	str	r1, [r0], #4
 	ldr	r1, op_colon_helpers_bx_lr
