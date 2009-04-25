@@ -16,6 +16,7 @@
 	.global op_colon	@ NAME: ":"
 	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
+	.global	op_semicolon	@ NAME: ";"
 
 @ All these ops have just one parameter, which is global: the stack top (vsp)
 op_add:
@@ -61,6 +62,9 @@ op_colon_helpers_bx_r0:
 op_colon_helpers_mov_lr_pc:
 	mov	lr, pc
 
+op_semicolon:
+	bx	lr
+
 op_colon:
 	push	{lr}
 	strtok	#0x20
@@ -86,8 +90,6 @@ op_colon:
 	str	r0, [r4]
 	ldr	r1, op_colon_helpers_push_lr
 	str	r1, [r0], #4
-	ldr	r1, op_colon_helpers_mov_r0_0
-	str	r1, [r0], #4
 
 	@ The tricky part, we look for the symbol, we load its address and then
 	@ we would need to generate the code to load it.  The only way I come
@@ -95,12 +97,27 @@ op_colon:
 	@ orr instruction which gets emitted.
 	@ This can be done in a cleaner way, but lets not overdoit in the first
 	@ try.
+.Lop_colon_restart:
 	push	{r0}
 	strtok	#0x20
 	bl	symtable_restart
 	bl	symtable_lookup
-	ldr	r2, [stp, #4]
 	pop	{r0}
+
+	ldr	r2, [stp]
+	cmp	r2, #0
+	beq	.Lop_colon_restart	@ Unrecognized symbol, skip for now
+
+	ldrb	r3, [r2]
+	ldrb	r4, [r2, #4]
+	cmp	r3, #0x3b	@ ':'
+	cmpeq	r4, #0x0
+	beq	.Lop_colon_end
+	ldr	r2, [stp, #4]
+
+	# Set r0 to zero
+	ldr	r1, op_colon_helpers_mov_r0_0
+	str	r1, [r0], #4
 
 	# LSB
 	and	r3, r2, #0xff
@@ -135,7 +152,9 @@ op_colon:
 	str	r1, [r0], #4
 	ldr	r1, op_colon_helpers_bx_r0
 	str	r1, [r0], #4
+	b	.Lop_colon_restart
 
+.Lop_colon_end:
 	@ We are done, close the subroutine with pop lr + bx lr
 	ldr	r1, op_colon_helpers_pop_lr
 	str	r1, [r0], #4
