@@ -29,4 +29,13 @@
 		mov	r7, #55
 		svc	#0
 	.endm
-
+	.macro mmap2 addr, length, prot, flags, fd, pgoffset
+		mov	r5, \pgoffset
+		mov	r4, \fd
+		mov	r3, \flags
+		mov	r2, \prot
+		mov	r1, \length
+		mov	r0, \addr
+		mov	r7, #192
+		svc	#0
+	.endm

@@ -23,14 +23,16 @@ isdigit:
 
 @ r0(*dest) r1(*src) r2(int n)
 strncpy:
+	cmp     r2, #0
+	bxeq    lr
 	mov	r4, r2
+.Lstrncpy_repeat:
 	ldrb	r3, [r1], #1
 	strb	r3, [r0], #1
-	subs	r2, #1
-	bne	strncpy
-	sub	r1, r4
-	sub	r0, r4
-	mov	r2, r4
+	subs	r4, #1
+	bne	.Lstrncpy_repeat
+	sub	r1, r2
+	sub	r0, r2
 	bx	lr
 
 strcmp:
