@@ -65,6 +65,8 @@ _start:
 	sbrk	#0x100
 	mov	bfp, r0
 	bl	init_symbols
+	mov	r0, #10
+	bl	set_base
 .Lreadline:
 	bic	bfp, bfp, #0xff
 	read	#0, bfp, #0x100
