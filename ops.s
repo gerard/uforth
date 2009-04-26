@@ -10,6 +10,8 @@
 
 	.text
 	.align	2
+	.global	op_hex		@ NAME: "HEX"
+	.global	op_decimal	@ NAME: "DECIMAL"
 	.global	op_add		@ NAME: "+"
 	.global	op_mult		@ NAME: "*"
 	.global	op_dot		@ NAME: "."
@@ -18,7 +20,20 @@
 	.global	op_dots		@ NAME: ".s"
 	.global	op_semicolon	@ NAME: ";"
 
-@ All these ops have just one parameter, which is global: the stack top (vsp)
+op_hex:
+	push	{lr}
+	mov	r0, #16
+	bl	set_base
+	pop	{lr}
+	bx	lr
+
+op_decimal:
+	push	{lr}
+	mov	r0, #10
+	bl	set_base
+	pop	{lr}
+	bx	lr
+
 op_add:
 	vtest	vsp
 	ldr	r0, [vsp, #-4]!
