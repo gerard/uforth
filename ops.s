@@ -19,6 +19,7 @@
 	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
 	.global	op_semicolon	@ NAME: ";"
+	.global op_fetch	@ NAME: "@"
 
 op_hex:
 	push	{lr}
@@ -202,4 +203,11 @@ op_dots:
 .Ldots_end:
 	putchar #0xa
 	pop	{lr}
+	bx	lr
+
+op_fetch:
+	vtest	vsp
+	ldr	r0, [vsp, #-4]!
+	ldr	r1, [r0]
+	str	r1, [vsp], #4
 	bx	lr
