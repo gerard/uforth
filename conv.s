@@ -39,9 +39,11 @@ set_base:
 	bx	lr
 
 .Lbuffer_word:
+	.local	buffer_8b
 	.word	buffer_8b
 	.comm	buffer_8b, 32, 4
 
 .Lbase:
+	.local	buffer_1b
 	.word	buffer_1b
 	.comm	buffer_1b, 1, 1

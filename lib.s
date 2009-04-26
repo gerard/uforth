@@ -118,5 +118,6 @@ div:
 	bx	lr
 
 .Lbuffer_byte:
+	.local	buffer_1b
 	.word	buffer_1b
 	.comm	buffer_1b, 1, 1
