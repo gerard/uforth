@@ -101,22 +101,6 @@ sbrk:
 	mov	r0, r2
 	bx	lr
 
-@ Input:  r0 (numerator)
-@	  r1 (denominator)
-@ Output: r0 (quotient)
-@	  r1 (remainder)
-div:
-	mov	r2, #0
-.Ldiv_restart:
-	subs	r0, r1
-	addpl	r2, #1
-	bpl	.Ldiv_restart
-.Ldiv_end:
-	add	r0, r1
-	mov	r1, r0
-	mov	r0, r2
-	bx	lr
-
 .Lbuffer_byte:
 	.local	buffer_1b
 	.word	buffer_1b
