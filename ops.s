@@ -20,6 +20,7 @@
 	.global	op_dots		@ NAME: ".s"
 	.global	op_semicolon	@ NAME: ";"
 	.global op_fetch	@ NAME: "@"
+	.global	op_bye		@ NAME: "BYE"
 
 op_hex:
 	push	{lr}
@@ -211,3 +212,6 @@ op_fetch:
 	ldr	r1, [r0]
 	str	r1, [vsp], #4
 	bx	lr
+
+op_bye:
+	exit	#0
