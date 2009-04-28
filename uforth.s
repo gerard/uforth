@@ -72,6 +72,8 @@ _start:
 	read	#0, bfp, #0x100
 	cmp	r0, #0x100
 	beq	.Lerror
+	cmp	r0, #0
+	beq	.Lend
 .Lrepeat:
 	strtok	#0x20
 	beq	.Lreadline
