@@ -8,6 +8,7 @@
 @	* r0 (uint32_t)	=> Number to convert
 @ Out:
 @	* r0 (char *)	=> Addres to a 16 bytes buffer
+@	* r1 (uint32_t) => Length of r0
 print_num:
 	push	{lr}
 	ldr	r1, .Lbuffer_word
@@ -38,6 +39,7 @@ print_num:
 
 	ldr	r0, .Lbuffer_word
 	add	r0, r0, r3
+	rsb	r1, r3, #14
 	pop	{lr}
 	bx	lr
 

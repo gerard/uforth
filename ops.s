@@ -59,7 +59,7 @@ op_dot:
 	vtest	vsp
 	ldr	r0, [vsp, #-4]!
 	bl	print_num
-	write	#1, r0, #16
+	write	#1, r0, r1
 	putchar	#0xa
 	pop	{lr}
 	bx	lr
@@ -197,7 +197,7 @@ op_dots:
 	ldr	r0, [r1], #4
 	push	{r1}
 	bl	print_num
-	write	#1, r0, #16
+	write	#1, r0, r1
 	putchar #0x20
 	pop	{r1}
 	b	.Ldots_repeat
