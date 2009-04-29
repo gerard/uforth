@@ -1,0 +1,14 @@
+[0090]
+    name    = star
+    input   = 3 6 * .
+    output  = 18
+
+[0120]
+    name    = plus
+    input   = 3 6 + .
+    output  = 9
+
+[1290]
+    name    = dupe
+    input   = 3 DUP .s
+    output  = 3 3

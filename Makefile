@@ -5,6 +5,7 @@ BIN=uforth
 SRCS=$(filter-out init_sym.s, $(wildcard *.s)) init_sym.s
 OBJS=$(patsubst %.s,%.o,$(SRCS))
 INCLUDES=$(wildcard *.asi)
+TESTS=$(wildcard t/TC-*)
 
 all: $(BIN) check
 
@@ -17,9 +18,10 @@ $(BIN): $(OBJS) $(INCLUDES)
 clean:
 	rm -f $(BIN) $(OBJS) init_sym.s
 
-check: $(BIN)
-	@for T in ./t/*.pl; do \
-		printf "%s\t" $${T} && $${T} ; \
+check: $(BIN) $(TESTS)
+	@for TC in $(TESTS); do \
+		echo " === Running tests:" `basename $${TC}` " === " ; \
+		./t/run-tests.pl $${TC} ; \
 	done ;
 
 .PHONY: clean

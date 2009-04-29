@@ -1,0 +1,4 @@
+[1660]
+    name    = HEX
+    input   = 9 15 32 HEX .s
+    output  = 9 F 20
