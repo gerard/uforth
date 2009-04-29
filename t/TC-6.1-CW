@@ -1,3 +1,8 @@
+[0040]
+    name    = colon
+    input   = 2 3 4 : TC0040 * + ; TC0040 .
+    output  = 14
+
 [0090]
     name    = star
     input   = 3 6 * .

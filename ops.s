@@ -127,8 +127,7 @@ op_colon:
 
 	ldrb	r3, [r2]
 	ldrb	r4, [r2, #4]
-	cmp	r3, #0x3b	@ ':'
-	cmpeq	r4, #0x0
+	cmp	r3, #0x3b	@ ';'
 	beq	.Lop_colon_end
 	ldr	r2, [stp, #4]
 
