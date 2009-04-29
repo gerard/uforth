@@ -7,6 +7,13 @@
 		tsteq	\reg, #0xf00
 		beq	panic
 	.endm
+	.macro VPOP reg
+		vtest	vsp
+		ldr	\reg, [vsp, #-4]!
+	.endm
+	.macro VPUSH reg
+		str	\reg, [vsp], #4
+	.endm
 
 	.text
 	.align	2
@@ -38,32 +45,26 @@ op_decimal:
 	bx	lr
 
 op_add:
-	vtest	vsp
-	ldr	r0, [vsp, #-4]!
-	vtest	vsp
-	ldr	r1, [vsp, #-4]!
+	VPOP	r0
+	VPOP	r1
 	add	r0, r0, r1
-	str	r0, [vsp], #4
+	VPUSH	r0
 	bx	lr
 
 op_mult:
-	vtest	vsp
-	ldr	r1, [vsp, #-4]!
-	vtest	vsp
-	ldr	r2, [vsp, #-4]!
+	VPOP	r1
+	VPOP	r2
 	mul	r0, r1, r2
-	str	r0, [vsp], #4
+	VPUSH	r0
 	bx	lr
 
 op_drop:
-	vtest	vsp
-	sub	vsp, #4
+	VPOP	r0
 	bx	lr
 
 op_dot:
 	push	{lr}
-	vtest	vsp
-	ldr	r0, [vsp, #-4]!
+	VPOP	r0
 	bl	print_num
 	write	#1, r0, r1
 	putchar	#0xa
@@ -177,9 +178,9 @@ op_colon:
 	bx	lr
 
 op_dup:
-	vtest	vsp
-	ldr	r0, [vsp, #-4]
-	str	r0, [vsp], #4
+	VPOP	r0
+	VPUSH	r0
+	VPUSH	r0
 	bx	lr
 
 op_dots:
@@ -203,10 +204,9 @@ op_dots:
 	bx	lr
 
 op_fetch:
-	vtest	vsp
-	ldr	r0, [vsp, #-4]!
+	VPOP	r0
 	ldr	r1, [r0]
-	str	r1, [vsp], #4
+	VPUSH	r1
 	bx	lr
 
 op_bye:
