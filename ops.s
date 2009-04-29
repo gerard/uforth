@@ -27,8 +27,32 @@
 	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
 	.global	op_semicolon	@ NAME: ";"
+	.global	op_allot	@ NAME: "ALLOT"
+	.global	op_store	@ NAME: "!"
 	.global op_fetch	@ NAME: "@"
+	.global	op_swap		@ NAME: "SWAP"
 	.global	op_bye		@ NAME: "BYE"
+
+op_allot:
+	push	{lr}
+	VPOP	r0
+	sbrk	r0
+	VPUSH	r0
+	pop	{lr}
+	bx	lr
+
+op_store:
+	VPOP	r0
+	VPOP	r1
+	str	r1, [r0]
+	bx	lr
+
+op_swap:
+	VPOP	r0
+	VPOP	r1
+	VPUSH	r0
+	VPUSH	r1
+	bx	lr
 
 op_hex:
 	push	{lr}

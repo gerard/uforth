@@ -1,3 +1,7 @@
+[0010]
+    name    = !
+    notest  = See 0710
+
 [0040]
     name    = colon
     input   = 2 3 4 : TC0040 * + ; TC0040 .
@@ -15,7 +19,7 @@
 
 [0180]
     name    = dot
-    notest  = Heavily used for the rest of the tests
+    notest  = See 0040, 0090, 0120...
 
 [0460]
     name    = semicolon
@@ -23,7 +27,12 @@
 
 [0650]
     name    = fetch
-    notest  = No proper testing available: Needs ! and ALLOT
+    notest  = See 0710
+
+[0710]
+    name    = ALLOT
+    input   = 4 ALLOT DUP 7 SWAP ! @ .
+    output  = 7
 
 [1170]
     name    = DECIMAL
@@ -32,9 +41,14 @@
 
 [1260]
     name    = DROP
-    notest  = Heavily used for the rest of the tests
+    notest  = See 1170
 
 [1290]
     name    = dupe
-    input   = 3 DUP .s
+    input   = 3 DUP .s DROP DROP
     output  = 3 3
+
+[2260]
+    name    = SWAP
+    input   = 15 16 SWAP .s DROP DROP
+    output  = 16 15
