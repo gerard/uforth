@@ -30,10 +30,17 @@ say OUT "";
 
 say OUT "init_sym:";
 say OUT "	push    {lr}";
-say OUT "	str     r1, [stp], #4";
-say OUT "	str     r2, [stp], #4";
-say OUT "	pop     {lr}";
-say OUT "	bx      lr";
+say OUT "	push	{r2}";
+say OUT "	mov	r0, stp";
+say OUT "	mov	r2, #32";
+say OUT "	cmp	r1, #0";
+say OUT "	streq	r1, [stp, #4]";
+say OUT "	blne	strncpy";
+say OUT "	add	stp, #32";
+say OUT "	pop	{r2}";
+say OUT "	str r2, [stp], #4";
+say OUT "	pop {lr}";
+say OUT "	bx  lr";
 say OUT "";
 
 say OUT "init_symbols:";

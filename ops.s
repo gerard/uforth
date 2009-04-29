@@ -94,19 +94,12 @@ op_colon:
 	push	{r0, r1}
 	bl	symtable_restart
 	bl	symtable_lookup
-	mov	r4, stp
 	pop	{r0, r1}
 	bne	.Lop_colon_no_allocate_name
-	push	{r0, r1, r4}
-	sbrk	#8
-	mov	r3, r0
-	pop	{r0, r1, r4}
-	push	{r4}
-	strncpy	r3, r0, r1
-	pop	{r4}
-	str	r0, [r4]
+	strncpy	stp, r0, r1
+	mov	r4, stp
 .Lop_colon_no_allocate_name:
-	add	r4, #4
+	add	r4, #32
 	push	{r1, r2, r4}
 	mmap2	#0, #4096, #0x7, #0x22, #-1, #0
 	pop	{r1, r2, r4}
@@ -127,15 +120,13 @@ op_colon:
 	bl	symtable_lookup
 	pop	{r0}
 
-	ldr	r2, [stp]
+	ldrb	r2, [stp]
 	cmp	r2, #0
 	beq	.Lop_colon_restart	@ Unrecognized symbol, skip for now
 
-	ldrb	r3, [r2]
-	ldrb	r4, [r2, #4]
-	cmp	r3, #0x3b	@ ';'
+	cmp	r2, #0x3b	@ ';'
 	beq	.Lop_colon_end
-	ldr	r2, [stp, #4]
+	ldr	r2, [stp, #32]
 
 	# Set r0 to zero
 	ldr	r1, op_colon_helpers_mov_r0_0
