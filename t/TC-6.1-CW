@@ -13,10 +13,26 @@
     input   = 3 6 + .
     output  = 9
 
+[0180]
+    name    = dot
+    notest  = Heavily used for the rest of the tests
+
+[0460]
+    name    = semicolon
+    notest  = No associated semantics: delimiter
+
+[0650]
+    name    = fetch
+    notest  = No proper testing available: Needs ! and ALLOT
+
 [1170]
     name    = DECIMAL
     input   = 9 15 32 HEX DECIMAL .s DROP DROP DROP
     output  = 9 15 32
+
+[1260]
+    name    = DROP
+    notest  = Heavily used for the rest of the tests
 
 [1290]
     name    = dupe

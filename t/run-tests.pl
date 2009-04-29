@@ -19,8 +19,14 @@ for my $sect ( sort keys %ini ) {
     my $name    = $ini{$sect}{"name"};
     my $input   = $ini{$sect}{"input"};
     my $output  = $ini{$sect}{"output"};
+    my $notest  = $ini{$sect}{"notest"};
 
     printf '%-18s', "$sect: ($name) ";
+    if(defined $notest) {
+        print "NOTEST: $notest\n";
+        next;
+    }
+
     $exp->send("$input\n");
     defined $exp->expect(1, -re, "^$output\\s*\$") ? print "PASSED" : print BOLD, RED, "FAILED";
     print RESET, "\n";
