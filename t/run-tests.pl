@@ -22,7 +22,7 @@ for my $sect ( sort keys %ini ) {
 
     printf '%-18s', "$sect: ($name) ";
     $exp->send("$input\n");
-    defined $exp->expect(1, "$output") ? print "PASSED" : print BOLD, RED, "FAILED";
+    defined $exp->expect(1, -re, "^$output\\s*\$") ? print "PASSED" : print BOLD, RED, "FAILED";
     print RESET, "\n";
 }
 

@@ -13,6 +13,11 @@
     input   = 3 6 + .
     output  = 9
 
+[1170]
+    name    = DECIMAL
+    input   = 9 15 32 HEX DECIMAL .s DROP DROP DROP
+    output  = 9 15 32
+
 [1290]
     name    = dupe
     input   = 3 DUP .s

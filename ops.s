@@ -16,6 +16,7 @@
 	.global	op_mult		@ NAME: "*"
 	.global	op_dot		@ NAME: "."
 	.global op_colon	@ NAME: ":"
+	.global op_drop		@ NAME: "DROP"
 	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
 	.global	op_semicolon	@ NAME: ";"
@@ -52,6 +53,11 @@ op_mult:
 	ldr	r2, [vsp, #-4]!
 	mul	r0, r1, r2
 	str	r0, [vsp], #4
+	bx	lr
+
+op_drop:
+	vtest	vsp
+	sub	vsp, #4
 	bx	lr
 
 op_dot:
