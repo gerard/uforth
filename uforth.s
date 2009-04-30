@@ -14,9 +14,17 @@ panic:
 parse_decimal:
 	push	{lr}
 	mov	r5, r0
-	mov	r4, #1
 	mov	r3, #10
 	mov	r2, #0
+
+	# Positive or negative number?
+	ldrb	r0, [r5]
+	cmp	r0, #0x2D		@ '-'
+	addeq	r5, #1
+	subeq	r1, #1
+	moveq	r4, #-1
+	movne	r4, #1
+
 .Lparse_decimal_repeat:
 	cmp	r1, #0
 	beq	.Lparse_decimal_end

@@ -21,7 +21,7 @@ for my $sect ( sort keys %ini ) {
     my $output  = $ini{$sect}{"output"};
     my $notest  = $ini{$sect}{"notest"};
 
-    printf '%-18s', "$sect: ($name) ";
+    printf '%-18s', defined $name ? "$sect: ($name) " : "$sect:";
     if(defined $notest) {
         print "NOTEST: $notest\n";
         next;

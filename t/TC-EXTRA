@@ -1,0 +1,3 @@
+[NEG NUMBERS]
+    input   = -1234 8 + .
+    output  = -1226

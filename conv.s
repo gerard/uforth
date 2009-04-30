@@ -1,4 +1,5 @@
 	.include	"syscalls.asi"
+	.include	"lib.asi"
 	.align	2
 	.text
 	.global	print_num
@@ -15,6 +16,19 @@ print_num:
 	ldr	r2, .Lbase
 	ldrb	r4, [r2]
 	mov	r3, #14
+
+	@ Handle negative numbers
+	tst	r0, #0x80000000
+	beq	.Lrestart
+	push	{r0, r1}
+	putchar	#0x2D
+	pop	{r0, r1}
+	bic	r0, #0x80000000
+	eor	r0, #0x7F000000
+	eor	r0, #0x00FF0000
+	eor	r0, #0x0000FF00
+	eor	r0, #0x000000FF
+	add	r0, #1
 
 .Lrestart:
 	push	{r1, r3, r4}
