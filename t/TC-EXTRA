@@ -5,3 +5,7 @@
 [LARGE NUMBERS]
     input   = -2147483648 2147483647 .s DROP DROP
     output  = -2147483648 2147483647
+
+[HEX INPUT]
+    input   = HEX 10E1 4D2 DECIMAL .s DROP DROP
+    output  = 4321 1234

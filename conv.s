@@ -3,6 +3,7 @@
 	.align	2
 	.text
 	.global	print_num
+	.global	get_base
 	.global	set_base
 
 @ In:
@@ -55,6 +56,11 @@ print_num:
 	add	r0, r0, r3
 	rsb	r1, r3, #14
 	pop	{lr}
+	bx	lr
+
+get_base:
+	ldr	r1, .Lbase
+	ldrb	r0, [r1]
 	bx	lr
 
 set_base:

@@ -1,11 +1,16 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
-	.macro cmpchar lower upper
-		cmp	r0, \lower
-		bmi	.Lcmp_chars_end
-		cmp	r0, \upper
-		cmpls	r0, r0
-	.Lcmp_chars_end:
+	.include	"flags.asi"
+	.macro cmpchar reg lower upper
+		cmp	\reg, \lower
+		bmi	.Lcmpchar_end\@
+		cmp	\reg, \upper
+		bpl	.Lcmpchar_fail\@
+		Z_SET
+		b	.Lcmpchar_end\@
+	.Lcmpchar_fail\@:
+		Z_CLEAR
+	.Lcmpchar_end\@:
 	.endm
 
 	.text
@@ -18,8 +23,15 @@
 	.global	sbrk
 	.global	div
 
+@ r0 => Digit candidate
+@ r1 => Base
 isdigit:
-	cmpchar	#0x30, #0x39
+	add	r1, #0x30
+	cmpchar	r0, #0x30, r1
+	beq	.Lisdigit_end
+	adds	r1, #0x7
+	cmpchar r0, #0x41, r1
+.Lisdigit_end:
 	bx	lr
 
 @ r0(*dest) r1(*src) r2(int n)

@@ -14,7 +14,10 @@ panic:
 parse_decimal:
 	push	{lr}
 	mov	r5, r0
-	mov	r3, #10
+	push	{r1}
+	bl	get_base
+	mov	r3, r0
+	pop	{r1}
 	mov	r2, #0
 
 	# Positive or negative number?
@@ -30,9 +33,14 @@ parse_decimal:
 	beq	.Lparse_decimal_end
 	sub	r1, #1
 	ldrb	r0, [r5, r1]
+	push	{r1}
+	mov	r1, r3
 	bl	isdigit
+	pop	{r1}
 	bne	.Lparse_decimal_error
 	sub	r0, #0x30
+	cmp	r0, #10
+	subpl	r0, #0x7
 	mla	r2, r4, r0, r2
 	mul	r4, r3
 	b	.Lparse_decimal_repeat
