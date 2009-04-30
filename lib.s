@@ -77,7 +77,6 @@ strtok:
 	cmp	r2, #0xA
 	beq	.Lstrtok_end
 	add	r1, #1
-	cmp	r1, #8
 	beq	.Lstrtok_end
 	b	.Lstrtok_getchar
 .Lstrtok_end:

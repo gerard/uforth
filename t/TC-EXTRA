@@ -1,3 +1,7 @@
 [NEG NUMBERS]
     input   = -1234 8 + .
     output  = -1226
+
+[LARGE NUMBERS]
+    input   = -2147483648 2147483647 .s DROP DROP
+    output  = -2147483648 2147483647
