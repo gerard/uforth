@@ -31,7 +31,17 @@
 	.global	op_store	@ NAME: "!"
 	.global op_fetch	@ NAME: "@"
 	.global	op_swap		@ NAME: "SWAP"
+	.global	op_equals	@ NAME: "="
 	.global	op_bye		@ NAME: "BYE"
+
+op_equals:
+	VPOP	r0
+	VPOP	r1
+	cmp	r0, r1
+	moveq	r0, #0		@ All bits CLEAR
+	movne	r0, #-1		@ All bits SET
+	VPUSH	r0
+	bx	lr
 
 op_allot:
 	push	{lr}

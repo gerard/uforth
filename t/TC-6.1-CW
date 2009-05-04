@@ -32,6 +32,11 @@
     name    = semicolon
     notest  = No associated semantics: delimiter
 
+[0530]
+    name    = equals
+    input   = 0 1 = 2 2 = .s DROP DROP
+    output  = -1 0
+
 [0650]
     name    = fetch
     notest  = See 0710
