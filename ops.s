@@ -109,8 +109,47 @@ op_colon_helpers_bx_r0:
 	bx	r0
 op_colon_helpers_mov_lr_pc:
 	mov	lr, pc
+op_colon_helpers_str_r0_vsp:
+	str	r0, [vsp], #4
 
 op_semicolon:
+	bx	lr
+
+@ Compiles a load operation of r1 on r0
+@ r0 is moved to next available location
+op_colon_compile_load32:
+	# Set r0 to zero
+	ldr	r2, op_colon_helpers_mov_r0_0
+	str	r2, [r0], #4
+
+	# LSB
+	and	r3, r1, #0xff
+	ldr	r2, op_colon_helpers_orr_r0_imm
+	orr	r2, r3
+	str	r2, [r0], #4
+
+	ror	r1, #8
+	and	r3, r1, #0xff
+	ldr	r2, op_colon_helpers_orr_r0_imm
+	orr	r2, r3
+	orr	r2, #0xc00
+	str	r2, [r0], #4
+
+	ror	r1, #8
+	and	r3, r1, #0xff
+	ldr	r2, op_colon_helpers_orr_r0_imm
+	orr	r2, r3
+	orr	r2, #0x800
+	str	r2, [r0], #4
+
+	# MSB
+	ror	r1, #8
+	and	r3, r1, #0xff
+	ldr	r2, op_colon_helpers_orr_r0_imm
+	orr	r2, r3
+	orr	r2, #0x400
+	str	r2, [r0], #4
+
 	bx	lr
 
 op_colon:
@@ -129,8 +168,8 @@ op_colon:
 	mmap2	#0, #4096, #0x7, #0x22, #-1, #0
 	pop	{r1, r2, r4}
 	str	r0, [r4]
-	ldr	r1, op_colon_helpers_push_lr
-	str	r1, [r0], #4
+	ldr	r2, op_colon_helpers_push_lr
+	str	r2, [r0], #4
 
 	@ The tricky part, we look for the symbol, we load its address and then
 	@ we would need to generate the code to load it.  The only way I come
@@ -139,56 +178,40 @@ op_colon:
 	@ This can be done in a cleaner way, but lets not overdoit in the first
 	@ try.
 .Lop_colon_restart:
-	push	{r0}
+	push	{r0}		@ PUSH
 	strtok	#0x20
+	mov	r6, r1		@ Save token length for immediate parsing
 	bl	symtable_restart
 	bl	symtable_lookup
-	pop	{r0}
 
 	ldrb	r2, [stp]
 	cmp	r2, #0
-	beq	.Lop_colon_restart	@ Unrecognized symbol, skip for now
+	beq	.Lop_colon_try_immediate	@ Is it a number?
+	pop	{r0}				@ POP@SYM
 
 	cmp	r2, #0x3b	@ ';'
 	beq	.Lop_colon_end
 	ldr	r2, [stp, #32]
 
-	# Set r0 to zero
-	ldr	r1, op_colon_helpers_mov_r0_0
-	str	r1, [r0], #4
-
-	# LSB
-	and	r3, r2, #0xff
-	ldr	r1, op_colon_helpers_orr_r0_imm
-	orr	r1, r3
-	str	r1, [r0], #4
-
-	ror	r2, #8
-	and	r3, r2, #0xff
-	ldr	r1, op_colon_helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0xc00
-	str	r1, [r0], #4
-
-	ror	r2, #8
-	and	r3, r2, #0xff
-	ldr	r1, op_colon_helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0x800
-	str	r1, [r0], #4
-
-	# MSB
-	ror	r2, #8
-	and	r3, r2, #0xff
-	ldr	r1, op_colon_helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0x400
-	str	r1, [r0], #4
+	mov	r1, r2
+	bl	op_colon_compile_load32
 
 	# r0 is finally constructed, branch and link
 	ldr	r1, op_colon_helpers_mov_lr_pc
 	str	r1, [r0], #4
 	ldr	r1, op_colon_helpers_bx_r0
+	str	r1, [r0], #4
+	b	.Lop_colon_restart
+
+.Lop_colon_try_immediate:
+	mov	r1, r6
+	bl	parse_num
+	mov	r1, r0
+
+	pop	{r0}				@ POP@IMM
+	beq	.Lop_colon_end			@ No luck
+	bl	op_colon_compile_load32
+	ldr	r1, op_colon_helpers_str_r0_vsp
 	str	r1, [r0], #4
 	b	.Lop_colon_restart
 

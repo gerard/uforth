@@ -2,9 +2,16 @@
     name    = !
     notest  = See 0710
 
-[0040]
+[0040a]
     name    = colon
-    input   = 2 3 4 : TC0040 * + ; TC0040 .
+    desc    = colon with no stack pushing
+    input   = 2 3 4 : TC0040a * + ; TC0040a .
+    output  = 14
+
+[0040b]
+    name    = colon
+    desc    = colon with stack pushing into definition
+    input   = : TC0040b 2 3 4 * + ; TC0040b .
     output  = 14
 
 [0090]
