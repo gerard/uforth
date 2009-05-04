@@ -123,33 +123,40 @@ op_colon_compile_load32:
 	str	r2, [r0], #4
 
 	# LSB
-	and	r3, r1, #0xff
+	ands	r3, r1, #0xff
+	beq	.Lop_colon_compile_load32_BYTE_2
 	ldr	r2, op_colon_helpers_orr_r0_imm
 	orr	r2, r3
 	str	r2, [r0], #4
 
+.Lop_colon_compile_load32_BYTE_2:
 	ror	r1, #8
-	and	r3, r1, #0xff
+	ands	r3, r1, #0xff
+	beq	.Lop_colon_compile_load32_BYTE_3
 	ldr	r2, op_colon_helpers_orr_r0_imm
 	orr	r2, r3
 	orr	r2, #0xc00
 	str	r2, [r0], #4
 
+.Lop_colon_compile_load32_BYTE_3:
 	ror	r1, #8
-	and	r3, r1, #0xff
+	ands	r3, r1, #0xff
+	beq	.Lop_colon_compile_load32_BYTE_4
 	ldr	r2, op_colon_helpers_orr_r0_imm
 	orr	r2, r3
 	orr	r2, #0x800
 	str	r2, [r0], #4
 
-	# MSB
+.Lop_colon_compile_load32_BYTE_4:	# aka, MSB
 	ror	r1, #8
-	and	r3, r1, #0xff
+	ands	r3, r1, #0xff
+	beq	.Lop_colon_compile_load32_end
 	ldr	r2, op_colon_helpers_orr_r0_imm
 	orr	r2, r3
 	orr	r2, #0x400
 	str	r2, [r0], #4
 
+.Lop_colon_compile_load32_end:
 	bx	lr
 
 op_colon:
