@@ -1,10 +1,55 @@
+	.include	"regdefs.asi"
+	.include	"flags.asi"
 	.include	"syscalls.asi"
 	.include	"lib.asi"
 	.align	2
 	.text
+	.global	parse_num
 	.global	print_num
 	.global	get_base
 	.global	set_base
+
+@ r0 => (char *) r1 => length of string
+parse_num:
+	push	{lr}
+	mov	r5, r0
+	push	{r1}
+	bl	get_base
+	mov	r3, r0
+	pop	{r1}
+	mov	r2, #0
+
+	# Positive or negative number?
+	ldrb	r0, [r5]
+	cmp	r0, #0x2D		@ '-'
+	addeq	r5, #1
+	subeq	r1, #1
+	moveq	r4, #-1
+	movne	r4, #1
+
+.Lparse_num_repeat:
+	cmp	r1, #0
+	beq	.Lparse_num_end
+	sub	r1, #1
+	ldrb	r0, [r5, r1]
+	push	{r1}
+	mov	r1, r3
+	bl	isdigit
+	pop	{r1}
+	bne	.Lparse_num_error
+	sub	r0, #0x30
+	cmp	r0, #10
+	subpl	r0, #0x7
+	mla	r2, r4, r0, r2
+	mul	r4, r3
+	b	.Lparse_num_repeat
+.Lparse_num_end:
+	str	r2, [vsp], #4
+.Lparse_num_error:
+	movs	r0, r1
+	Z_REVERT
+	pop	{lr}
+	bx	lr
 
 @ In:
 @	* r0 (uint32_t)	=> Number to convert

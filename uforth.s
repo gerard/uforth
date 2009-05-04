@@ -10,48 +10,6 @@
 panic:
 	exit	#1
 
-@ r0 => (char *) r1 => length of string
-parse_decimal:
-	push	{lr}
-	mov	r5, r0
-	push	{r1}
-	bl	get_base
-	mov	r3, r0
-	pop	{r1}
-	mov	r2, #0
-
-	# Positive or negative number?
-	ldrb	r0, [r5]
-	cmp	r0, #0x2D		@ '-'
-	addeq	r5, #1
-	subeq	r1, #1
-	moveq	r4, #-1
-	movne	r4, #1
-
-.Lparse_decimal_repeat:
-	cmp	r1, #0
-	beq	.Lparse_decimal_end
-	sub	r1, #1
-	ldrb	r0, [r5, r1]
-	push	{r1}
-	mov	r1, r3
-	bl	isdigit
-	pop	{r1}
-	bne	.Lparse_decimal_error
-	sub	r0, #0x30
-	cmp	r0, #10
-	subpl	r0, #0x7
-	mla	r2, r4, r0, r2
-	mul	r4, r3
-	b	.Lparse_decimal_repeat
-.Lparse_decimal_end:
-	str	r2, [vsp], #4
-.Lparse_decimal_error:
-	movs	r0, r1
-	Z_REVERT
-	pop	{lr}
-	bx	lr
-
 @ This will return Z set if no symbol was found (via symtable_run)
 parse_symbol:
 	push	{lr}
@@ -66,7 +24,7 @@ reduce_token:
 	push	{r0, r1}
 	bl	parse_symbol
 	pop	{r0, r1}
-	bleq	parse_decimal
+	bleq	parse_num
 	pop	{lr}
 	bx	lr
 
