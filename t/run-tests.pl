@@ -28,8 +28,22 @@ for my $sect ( sort keys %ini ) {
     }
 
     $exp->send("$input\n");
-    defined $exp->expect(1, -re, "^$output\\s*\$") ? print "PASSED" : print BOLD, RED, "FAILED";
-    print RESET, "\n";
+    if(defined $exp->expect(1, -re, "^$output\\s*\$")) {
+        print "PASSED\n";
+    } else {
+        print BOLD, RED, "FAILED\n";
+        print RESET, "";
+
+        # Re-spawn the process, as it should be in bad shape.
+        # TODO: Move this to a sub to clean up this a bit.
+        $exp->send("BYE\n");
+        $exp->soft_close();
+
+        $exp = new Expect();
+        $exp->spawn("qemu-arm", "./uforth") or die "Cannot spawn: $!\n";
+        $exp->raw_pty(0);
+        $exp->log_stdout(0);
+    }
 }
 
 $exp->send("BYE\n");
