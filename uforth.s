@@ -21,10 +21,18 @@ parse_symbol:
 
 reduce_token:
 	push	{lr}
+
+	@ Symbol?
 	push	{r0, r1}
 	bl	parse_symbol
 	pop	{r0, r1}
-	bleq	parse_num
+
+	@ No luck, try as an immediate:
+	bne	.Lreduce_token_end
+	bl	parse_num
+	strne	r0, [vsp], #4
+
+.Lreduce_token_end:
 	pop	{lr}
 	bx	lr
 

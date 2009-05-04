@@ -10,6 +10,8 @@
 	.global	set_base
 
 @ r0 => (char *) r1 => length of string
+@ Returns the number in r0.
+@ Z is set if no valid number can be parsed
 parse_num:
 	push	{lr}
 	mov	r5, r0
@@ -43,11 +45,11 @@ parse_num:
 	mla	r2, r4, r0, r2
 	mul	r4, r3
 	b	.Lparse_num_repeat
-.Lparse_num_end:
-	str	r2, [vsp], #4
 .Lparse_num_error:
-	movs	r0, r1
+	Z_CLEAR
+.Lparse_num_end:
 	Z_REVERT
+	mov	r0, r2
 	pop	{lr}
 	bx	lr
 
