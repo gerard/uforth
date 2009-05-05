@@ -136,15 +136,13 @@ op_colon:
 	bl	symtable_lookup
 	pop	{r0, r1}
 
-	bne	.Lop_colon_redefinition
-	strncpy	stp, r0, r1
+	@ We just copy the name if none was found
+	bleq	symtable_set_name
 
-.Lop_colon_redefinition:
 	push	{stp}
 	bl	compile
 	pop	{stp}
-	add	stp, #32
-	str	r0, [stp]
+	bl	symtable_set_fun
 
 	pop	{lr}
 	bx	lr

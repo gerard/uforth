@@ -111,9 +111,12 @@ compile:
 
 	cmp	r2, #0x3b	@ ';', aka :-terminator
 	beq	.Lcompile_end
-	ldr	r2, [stp, #32]
 
-	mov	r1, r2
+	push	{r0}
+	bl	symtable_get_fun
+	mov	r1, r0
+	pop	{r0}
+
 	bl	compile_load32
 
 	# r0 is finally constructed, branch and link

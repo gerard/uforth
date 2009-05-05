@@ -42,8 +42,7 @@ _start:
 	@       boundary
 	sbrk	#0x1000
 	mov	vsp, r0
-	sbrk	#0x1000
-	mov	stp, r0
+	bl	symtable_init
 	sbrk	#0x100
 	mov	bfp, r0
 	bl	init_symbols

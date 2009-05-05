@@ -38,14 +38,24 @@ isdigit:
 strncpy:
 	cmp     r2, #0
 	bxeq    lr
-	mov	r4, r2
+
+	mov	r4, #0
+
 .Lstrncpy_repeat:
-	ldrb	r3, [r1], #1
-	strb	r3, [r0], #1
-	subs	r4, #1
+	ldrb	r3, [r1, r4]
+	strb	r3, [r0, r4]
+	add	r4, #1
+	cmp	r4, r2
+	cmpne	r3, #0
 	bne	.Lstrncpy_repeat
-	sub	r1, r2
-	sub	r0, r2
+
+	mov	r3, #0
+.Lstrncpy_fill_zeros:
+	cmp	r4, r2
+	strneb	r3, [r0, r4]
+	add	r4, #1
+	bne	.Lstrncpy_fill_zeros
+
 	bx	lr
 
 strcmp:

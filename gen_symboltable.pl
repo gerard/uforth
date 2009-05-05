@@ -30,15 +30,11 @@ say OUT "";
 
 say OUT "init_sym:";
 say OUT "	push    {lr}";
-say OUT "	push	{r2}";
-say OUT "	mov	r0, stp";
-say OUT "	mov	r2, #32";
-say OUT "	cmp	r1, #0";
-say OUT "	streq	r1, [stp, #4]";
-say OUT "	blne	strncpy";
-say OUT "	add	stp, #32";
-say OUT "	pop	{r2}";
-say OUT "	str r2, [stp], #4";
+say OUT "	mov	r0, r2";
+say OUT "	bl	symtable_set_fun";
+say OUT "	mov	r0, r1";
+say OUT "	mov r1, #32";
+say OUT "	bl	symtable_set_name";
 say OUT "	pop {lr}";
 say OUT "	bx  lr";
 say OUT "";
@@ -51,13 +47,11 @@ for my $sym ( keys %symbols ) {
 	say OUT "	ldr	r1, .L$SYM"."_ID";
 	say OUT "	ldr	r2, .L$SYM"."_OP";
 	say	OUT "	bl	init_sym";
+	say OUT "	bl	symtable_next";
 }
 
-say OUT "	mov	r1, #0";
-say OUT "	mov	r2, #0";
-say OUT "	bl	init_sym";
-say OUT "	bic	stp, stp, #0xff";
-say OUT "	bic	stp, stp, #0xf00";
+say OUT "	bl	symtable_set_null";
+say OUT "	bl	symtable_restart";
 say OUT "	pop	{lr}";
 say OUT "	bx	lr";
 say OUT "";
