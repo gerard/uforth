@@ -35,6 +35,7 @@ say OUT "	bl	symtable_set_fun";
 say OUT "	mov	r0, r1";
 say OUT "	mov r1, #32";
 say OUT "	bl	symtable_set_name";
+say OUT "	bl	symtable_setflag_interp";
 say OUT "	pop {lr}";
 say OUT "	bx  lr";
 say OUT "";

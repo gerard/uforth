@@ -143,6 +143,7 @@ op_colon:
 	bl	compile
 	pop	{stp}
 	bl	symtable_set_fun
+	bl	symtable_setflag_interp
 
 	pop	{lr}
 	bx	lr
