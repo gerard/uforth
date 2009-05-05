@@ -32,7 +32,27 @@
 	.global op_fetch	@ NAME: "@"
 	.global	op_swap		@ NAME: "SWAP"
 	.global	op_equals	@ NAME: "="
+	.global	op_type		@ NAME: "TYPE"
 	.global	op_bye		@ NAME: "BYE"
+
+op_type:
+	push	{lr}
+	VPOP	r0
+	VPOP	r1
+	mov	r3, #0
+.Lop_type_restart:
+	cmp	r3, r0
+	beq	.Lop_type_end
+	ldrb	r2, [r1, r3]
+	add	r3, #1
+	push	{r0, r1}
+	putchar r2
+	pop	{r0, r1}
+	b	.Lop_type_restart
+.Lop_type_end:
+	putchar	#0xa
+	pop	{lr}
+	bx	lr
 
 op_equals:
 	VPOP	r0
