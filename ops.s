@@ -143,9 +143,12 @@ op_colon:
 	bleq	symtable_set_name
 
 	push	{stp}
-	mov	r0, #0
-	ldr	r1, .LDELIM_COLON
+	bl	compile_entry
+	push	{r0}
+	ldr	r0, .LDELIM_COLON
 	bl	compile
+	bl	compile_exit
+	pop	{r0}
 	pop	{stp}
 	bl	symtable_set_fun
 	bl	symtable_setflag_interp

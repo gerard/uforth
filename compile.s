@@ -4,6 +4,8 @@
 	.text
 	.align	2
 	.global	compile
+	.global	compile_entry
+	.global	compile_exit
 
 @ This shouldn't be necessary if we would assemble ourselves, but lets allow
 @ the system assembler do it for us: we are lazy.
@@ -68,35 +70,70 @@ compile_load32:
 .Lcompile_load32_end:
 	bx	lr
 
-@ The meat of the colon opearator.  No other compilation subroutine can be
-@ called from outside this.
-@ TODO:   OPTIMIZE push/pop operations to mov
-@ Input:  bfp (global), r0 (compilation entry point, allocate if zero)
-@	  r1  (compilation delimiter)
-@ Output: r0  (compilation entry point)
-compile:
-	push	{lr}
-
-	mov	r8, r1
-
-	cmp	r0, #0
-	bne	.Lcompile_already_allocated
-
+execmem_get:
 	ldr	r0, .Lcompilation_pointer
 	ldr	r0, [r0]
 	cmp	r0, #0
-	bne	.Lcompile_already_allocated
+	bne	.Lexecmem_get_done
 
 	@ TODO: We have no mmap memory management.  That means that after our
 	@ page (4K) runs out, well get a SIGSEGV.  Fix that later: if you get
 	@ to write 4K of useful code right now, you shouldn't be using this
 	@ forth implementation anyway.
+	push	{r1, r2, r3, r4, r5}
 	mmap2	#0, #4096, #0x7, #0x22, #-1, #0
+	pop	{r1, r2, r3, r4, r5}
 
-.Lcompile_already_allocated:
-	push	{r0}			@ This will be our return value
-	ldr	r2, helpers_push_lr
-	str	r2, [r0], #4
+.Lexecmem_get_done:
+	bx	lr
+
+execmem_store:
+	ldr	r1, .Lcompilation_pointer
+	str	r0, [r1]
+	bx	lr
+
+@ This function is the only one that needs to return the entry point of the
+@ compiled code.  The rest work trough the execmem iface.
+compile_entry:
+	push	{lr}
+
+	bl	execmem_get
+	ldr	r1, helpers_push_lr
+	str	r1, [r0], #4
+	bl	execmem_store
+
+	@ Our return value
+	sub	r0, #4
+
+	pop	{lr}
+	bx	lr
+
+compile_exit:
+	push	{lr}
+	bl	execmem_get
+
+	ldr	r1, helpers_pop_lr
+	str	r1, [r0], #4
+	ldr	r1, helpers_bx_lr
+	str	r1, [r0], #4
+
+	bl	execmem_store
+	pop	{lr}
+	bx	lr
+
+@ The meat of the colon opearator.  No other compilation subroutine can be
+@ called from outside this.
+@ Input:  bfp (global), r0  (compilation delimiter)
+@ Output: r0  (compilation entry point)
+compile:
+	push	{lr}
+
+	# Move delimiter somewhere else
+	mov	r8, r0
+
+	# Save initial exec point in case we need to backup
+	bl	execmem_get
+	push	{r0}
 
 	@ The tricky part, we look for the symbol, we load its address and then
 	@ we would need to generate the code to load it.  The only way I come
@@ -105,7 +142,6 @@ compile:
 	@ This can be done in a cleaner way, but lets not overdoit in the first
 	@ try.
 .Lcompile_restart:
-	push	{r0}
 	strtok	#0x20
 	mov	r6, r1		@ Save token length for immediate parsing
 	bl	symtable_restart
@@ -123,26 +159,27 @@ compile:
 	@ Try delimiter
 	mov	r1, r8
 	bl	strcmp
-	popeq	{r0}
 	beq	.Lcompile_end
 
 	@ Try immediate
 	mov	r1, r6
 	bl	parse_num
 	mov	r1, r0
-	pop	{r0}
+	beq	.Lcompile_end_fail
 
-	beq	.Lcompile_end_fail		@ No luck
+	@ Immediate success
+	bl	execmem_get
 	bl	compile_load32
 	ldr	r1, helpers_str_r0_vsp
 	str	r1, [r0], #4
+	bl	execmem_store
 	b	.Lcompile_restart
 
 .Lcompile_interpretation:
 	bl	symtable_get_fun
 	mov	r1, r0
-	pop	{r0}
 
+	bl	execmem_get
 	bl	compile_load32
 
 	# r0 is finally constructed, branch and link
@@ -150,25 +187,17 @@ compile:
 	str	r1, [r0], #4
 	ldr	r1, helpers_bx_r0
 	str	r1, [r0], #4
+
+	bl	execmem_store
 	b	.Lcompile_restart
 
+@ If we have failed, we restore the execmem pointer
 .Lcompile_end_fail:
 	pop	{r0}
-	mov	r0, #0
-	pop	{lr}
-	bx	lr
+	bl	execmem_store
+	push	{r0}
 
 .Lcompile_end:
-	@ We are done, close the subroutine with pop lr + bx lr
-	ldr	r1, helpers_pop_lr
-	str	r1, [r0], #4
-	ldr	r1, helpers_bx_lr
-	str	r1, [r0], #4
-
-	@ Now, store the compilation pointer for the next time
-	ldr	r1, .Lcompilation_pointer
-	str	r0, [r1]
-
 	pop	{r0}
 	pop	{lr}
 	bx	lr
