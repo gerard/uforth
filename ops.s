@@ -15,6 +15,13 @@
 		str	\reg, [vsp], #4
 	.endm
 
+	.section	.rodata
+	.align	2
+
+.LCDELIM_COLON:
+	@ The assembler chokes if we use ";"
+	.asciz	"\x3B"
+
 	.text
 	.align	2
 	.global	op_hex		@ NAME: "HEX"
@@ -26,7 +33,6 @@
 	.global op_drop		@ NAME: "DROP"
 	.global op_dup		@ NAME: "DUP"
 	.global	op_dots		@ NAME: ".s"
-	.global	op_semicolon	@ NAME: ";"
 	.global	op_allot	@ NAME: "ALLOT"
 	.global	op_store	@ NAME: "!"
 	.global op_fetch	@ NAME: "@"
@@ -125,9 +131,6 @@ op_dot:
 	pop	{lr}
 	bx	lr
 
-op_semicolon:
-	bx	lr
-
 op_colon:
 	push	{lr}
 	strtok	#0x20
@@ -140,6 +143,8 @@ op_colon:
 	bleq	symtable_set_name
 
 	push	{stp}
+	mov	r0, #0
+	ldr	r1, .LDELIM_COLON
 	bl	compile
 	pop	{stp}
 	bl	symtable_set_fun
@@ -182,3 +187,8 @@ op_fetch:
 
 op_bye:
 	exit	#0
+
+	.align	2
+.LDELIM_COLON:
+	.word	.LCDELIM_COLON
+

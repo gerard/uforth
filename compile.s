@@ -70,10 +70,17 @@ compile_load32:
 
 @ The meat of the colon opearator.  No other compilation subroutine can be
 @ called from outside this.
-@ Input:  bfp (global)
+@ TODO:   OPTIMIZE push/pop operations to mov
+@ Input:  bfp (global), r0 (compilation entry point, allocate if zero)
+@	  r1  (compilation delimiter)
 @ Output: r0  (compilation entry point)
 compile:
 	push	{lr}
+
+	mov	r8, r1
+
+	cmp	r0, #0
+	bne	.Lcompile_already_allocated
 
 	ldr	r0, .Lcompilation_pointer
 	ldr	r0, [r0]
@@ -98,21 +105,34 @@ compile:
 	@ This can be done in a cleaner way, but lets not overdoit in the first
 	@ try.
 .Lcompile_restart:
-	push	{r0}		@ PUSH
+	push	{r0}
 	strtok	#0x20
 	mov	r6, r1		@ Save token length for immediate parsing
 	bl	symtable_restart
 	bl	symtable_lookup
 
-	ldrb	r2, [stp]
-	cmp	r2, #0
-	beq	.Lcompile_try_immediate		@ Is it a number?
-	pop	{r0}				@ POP@SYM
+	@ If symtable_lookup found something, use it
+	bne	.Lcompile_interpretation
 
-	cmp	r2, #0x3b	@ ';', aka :-terminator
+	@ Try delimiter
+	mov	r1, r8
+	bl	strcmp
+	popeq	{r0}
 	beq	.Lcompile_end
 
-	push	{r0}
+	@ Try immediate
+	mov	r1, r6
+	bl	parse_num
+	mov	r1, r0
+	pop	{r0}
+
+	beq	.Lcompile_end_fail		@ No luck
+	bl	compile_load32
+	ldr	r1, helpers_str_r0_vsp
+	str	r1, [r0], #4
+	b	.Lcompile_restart
+
+.Lcompile_interpretation:
 	bl	symtable_get_fun
 	mov	r1, r0
 	pop	{r0}
@@ -126,17 +146,11 @@ compile:
 	str	r1, [r0], #4
 	b	.Lcompile_restart
 
-.Lcompile_try_immediate:
-	mov	r1, r6
-	bl	parse_num
-	mov	r1, r0
-
-	pop	{r0}				@ POP@IMM
-	beq	.Lcompile_end			@ No luck
-	bl	compile_load32
-	ldr	r1, helpers_str_r0_vsp
-	str	r1, [r0], #4
-	b	.Lcompile_restart
+.Lcompile_end_fail:
+	pop	{r0}
+	mov	r0, #0
+	pop	{lr}
+	bx	lr
 
 .Lcompile_end:
 	@ We are done, close the subroutine with pop lr + bx lr
@@ -149,7 +163,7 @@ compile:
 	ldr	r1, .Lcompilation_pointer
 	str	r0, [r1]
 
-	pop	{r0}		@ Pop return value (mmap2 return)
+	pop	{r0}
 	pop	{lr}
 	bx	lr
 

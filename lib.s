@@ -74,7 +74,7 @@ strcmp:
 	cmp	r4, #0x20
 	cmpne	r4, #0xA
 	cmpne	r5, #0x20
-	cmpne	r4, #0xA
+	cmpne	r5, #0xA
 .Lstrcmp_end:
 	bx	lr
 
