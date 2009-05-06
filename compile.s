@@ -111,9 +111,15 @@ compile:
 	bl	symtable_restart
 	bl	symtable_lookup
 
-	@ If symtable_lookup found something, use it
+	beq	.Lcompile_lookup_failed
+	@ symtable_lookup found something, is it interpretated or compiled?
+	push	{r0}
+	bl	symtable_getflag_interp
+	pop	{r0}
 	bne	.Lcompile_interpretation
+	beq	panic
 
+.Lcompile_lookup_failed:
 	@ Try delimiter
 	mov	r1, r8
 	bl	strcmp
