@@ -152,12 +152,16 @@ compile:
 	bl	execmem_get
 	push	{r0}
 
-	@ The tricky part, we look for the symbol, we load its address and then
-	@ we would need to generate the code to load it.  The only way I come
-	@ up is byte by byte.  We mask the stuff we need and then we modify an
-	@ orr instruction which gets emitted.
-	@ This can be done in a cleaner way, but lets not overdoit in the first
-	@ try.
+	@ There are 4 valid tokens that can be found: interpretable symbols,
+	@ compilable symbols, immediates and terminators. Watch out, this is
+	@ the meat:
+	@ 1. Check if the token is a symbol, if its not, jump to 3.
+	@ 2. If it's interpretable jump to 6, if not (compilable) jump to 7.
+	@ 3. Is it a delimiter? then *finish gracefuly*. Otherwise, continue.
+	@ 4. Parse a number. If it fails, *finish on error*; ow continue.
+	@ 5. Emit immediate loading code and go back to 1.
+	@ 6. Emit code to jump to subroutine and go back to 1.
+	@ 7. Run the code emiting subroutine (comp token) and go back to 1.
 .Lcompile_restart:
 	strtok	#0x20
 	mov	r6, r1		@ Save token length for immediate parsing
