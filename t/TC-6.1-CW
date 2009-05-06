@@ -60,10 +60,15 @@
     input   = 3 DUP .s DROP DROP
     output  = 3 3
 
-[1700]
-    name    = IF
-    input   = : T IF 1 ELSE -1 THEN ; 0 T 2 T .s DROP DROP
+[1700a]
+    name    = IF I-E-T
+    input   = : TC1700a IF 1 ELSE -1 THEN ; 0 TC1700a 2 TC1700a .s DROP DROP
     output  = -1 1
+
+[1700b]
+    name    = IF I-T
+    input   = : TC1700b IF 1 THEN ; 0 TC1700b 2 TC1700b .
+    output  = 1
 
 [2260]
     name    = SWAP

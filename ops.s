@@ -21,6 +21,7 @@
 .LCDELIM_COLON:
 	@ The assembler chokes if we use ";"
 	.asciz	"\x3B"
+	.ascii	"\x00"
 
 	.text
 	.align	2

@@ -4,10 +4,11 @@
 
 	.section	.rodata
 	.align	2
-.LCTERMIN_IF1:
+.LCTERMIN_IF_ELSE:
 	.asciz	"ELSE"
-.LCTERMIN_IF2:
+.LCTERMIN_IF_THEN:
 	.asciz	"THEN"
+	.ascii	"\x00"
 
 	.text
 	.align	2
@@ -140,8 +141,8 @@ compile_exit:
 
 @ The meat of the colon opearator.  No other compilation subroutine can be
 @ called from outside this.
-@ Input:  bfp (global), r0  (compilation delimiter)
-@ Output: r0  (compilation entry point)
+@ Input:  bfp (global), r0  (compilation terminator)
+@ Output: r0  (pointer to termination string)
 compile:
 	push	{lr}
 
@@ -177,11 +178,30 @@ compile:
 	beq	.Lcompile_compilation
 
 .Lcompile_lookup_failed:
-	@ Try delimiter
+
+	@ We look now for terminators. Note the terminators structure.  It's
+	@ a NULL-terminated list of NULL-terminated strings.
 	mov	r1, r8
+
+.Lcompile_terminator_restart:
+	@ Try terminator
 	bl	strcmp
+	moveq	r0, r1
 	beq	.Lcompile_end
 
+	@ Terminator failed, chomp it
+.Lcompile_eating_terminator:
+	ldrb	r2, [r1], #1
+	cmp	r2, #0
+	bne	.Lcompile_eating_terminator
+
+	@ Any other delimiter to test?
+	ldrb	r2, [r1]
+	cmp	r2, #0
+	beq	.Lcompile_terminators_failed
+	b	.Lcompile_terminator_restart
+
+.Lcompile_terminators_failed:
 	@ Try immediate
 	mov	r1, r6
 	bl	parse_num
@@ -227,7 +247,7 @@ compile:
 	push	{r0}
 
 .Lcompile_end:
-	pop	{r0}
+	pop	{lr}		@ We don't care about this value
 	pop	{lr}
 	bx	lr
 
@@ -245,12 +265,14 @@ compile_if:
 	add	r0, #4			@ Space for branch instruction
 	bl	execmem_store
 
-	ldr	r0, .LTERMIN_IF1
+	ldr	r0, .LTERMIN_IF_ELSE
 	push	{r4}
 	bl	compile
+	mov	r6, r0
 	pop	{r4}
 
 	bl	execmem_get
+
 	@ TO FILL: IF-TRUE Exit
 	mov	r5, r0
 	add	r0, #4			@ Space for branch instruction
@@ -263,9 +285,22 @@ compile_if:
 	bic	r1, #0xFF000000
 	orr	r3, r3, r1
 	str	r3, [r4]
-	bl	execmem_store
 
-	ldr	r0, .LTERMIN_IF2
+	@ Was it IF .. THEN or IF .. ELSE .. THEN ?
+	ldr	r2, .LTERMIN_IF_THEN
+	cmp	r2, r6
+
+	@ If it was a THEN, then we dont need to fill a branch to skip the
+	@ FALSE part, it doesn't exist at all
+	@ Note that we have left a space for a branch instruction that won't be
+	@ filled.  That's fine, as the branch that skip the IF .. THEN part
+	@ expects it to be there, and 0x0 is just a nop on ARM.
+	@ Of course, this should be optimized in the future, but seems minor
+	@ right now.
+	bleq	execmem_store
+	beq	.Lcompile_if_short
+
+	ldr	r0, .LTERMIN_IF_THEN
 	push	{r5}
 	bl	compile
 	pop	{r5}
@@ -281,6 +316,7 @@ compile_if:
 	str	r3, [r5]
 	@ No need to execmem_store, as we didn't write anything new
 
+.Lcompile_if_short:
 	pop	{lr}
 	bx	lr
 
@@ -290,7 +326,7 @@ compile_if:
 	.lcomm	compilation_pointer, 4
 
 	.align	2
-.LTERMIN_IF1:
-	.word	.LCTERMIN_IF1
-.LTERMIN_IF2:
-	.word	.LCTERMIN_IF2
+.LTERMIN_IF_ELSE:
+	.word	.LCTERMIN_IF_ELSE
+.LTERMIN_IF_THEN:
+	.word	.LCTERMIN_IF_THEN
