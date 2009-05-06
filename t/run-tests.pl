@@ -1,4 +1,8 @@
 #!/usr/bin/perl -w
+
+# Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
+# This program is open source.  For license terms, see the LICENSE file.
+
 use strict;
 use Config::IniFiles;
 use File::Basename;

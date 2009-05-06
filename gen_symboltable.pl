@@ -1,5 +1,9 @@
 #!/usr/bin/perl -w
 # vim: set noexpandtab:ts=8:sw=8
+
+# Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
+# This program is open source.  For license terms, see the LICENSE file.
+
 use 5.010;
 use strict;
 

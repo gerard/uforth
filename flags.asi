@@ -1,3 +1,6 @@
+@ Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
+@ This program is open source.  For license terms, see the LICENSE file.
+
 	.macro Z_CLEAR
 		movs	bfp, bfp
 	.endm

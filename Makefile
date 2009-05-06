@@ -1,3 +1,6 @@
+# Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
+# This program is open source.  For license terms, see the LICENSE file.
+
 AS=arm-angstrom-linux-gnueabi-as
 LD=arm-angstrom-linux-gnueabi-ld
 
