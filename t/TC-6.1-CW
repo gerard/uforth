@@ -60,6 +60,11 @@
     input   = 3 DUP .s DROP DROP
     output  = 3 3
 
+[1700]
+    name    = IF
+    input   = : T IF 1 ELSE -1 THEN ; 0 T 2 T .s DROP DROP
+    output  = -1 1
+
 [2260]
     name    = SWAP
     input   = 15 16 SWAP .s DROP DROP

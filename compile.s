@@ -1,11 +1,20 @@
 	.include	"regdefs.asi"
 	.include	"syscalls.asi"
 	.include	"lib.asi"
+
+	.section	.rodata
+	.align	2
+.LCTERMIN_IF1:
+	.asciz	"ELSE"
+.LCTERMIN_IF2:
+	.asciz	"THEN"
+
 	.text
 	.align	2
 	.global	compile
 	.global	compile_entry
 	.global	compile_exit
+	.global	compile_if	@ NAME: "IF"
 
 @ This shouldn't be necessary if we would assemble ourselves, but lets allow
 @ the system assembler do it for us: we are lazy.
@@ -13,6 +22,14 @@ helpers_push_lr:
 	push	{lr}
 helpers_pop_lr:
 	pop	{lr}
+helpers_cmp_r0_0:
+	cmp	r0, #0
+helpers_beq:
+	.word	0x0A000000
+helpers_b:
+	.word	0xEA000000
+helpers_ldr_r0_vsp:
+	ldr	r0, [vsp, #-4]!
 helpers_bx_lr:
 	bx	lr
 helpers_mov_r0_0:
@@ -153,7 +170,7 @@ compile:
 	bl	symtable_getflag_interp
 	pop	{r0}
 	bne	.Lcompile_interpretation
-	beq	panic
+	beq	.Lcompile_compilation
 
 .Lcompile_lookup_failed:
 	@ Try delimiter
@@ -191,6 +208,14 @@ compile:
 	bl	execmem_store
 	b	.Lcompile_restart
 
+.Lcompile_compilation:
+	bl	symtable_get_fun
+	push	{r8}
+	mov	lr, pc
+	bx	r0
+	pop	{r8}
+	b	.Lcompile_restart
+
 @ If we have failed, we restore the execmem pointer
 .Lcompile_end_fail:
 	pop	{r0}
@@ -202,7 +227,66 @@ compile:
 	pop	{lr}
 	bx	lr
 
+compile_if:
+	push	{lr}
+
+	bl	execmem_get
+	ldr	r1, helpers_ldr_r0_vsp
+	str	r1, [r0], #4
+	ldr	r1, helpers_cmp_r0_0
+	str	r1, [r0], #4
+
+	@ TO FILL: IF-FALSE Entry
+	mov	r4, r0
+	add	r0, #4			@ Space for branch instruction
+	bl	execmem_store
+
+	ldr	r0, .LTERMIN_IF1
+	push	{r4}
+	bl	compile
+	pop	{r4}
+
+	bl	execmem_get
+	@ TO FILL: IF-TRUE Exit
+	mov	r5, r0
+	add	r0, #4			@ Space for branch instruction
+
+	@ FILL: IF-FALSE Entry
+	sub	r1, r0, r4
+	sub	r1, #8
+	ldr	r3, helpers_beq
+	asr	r1, r1, #2
+	bic	r1, #0xFF000000
+	orr	r3, r3, r1
+	str	r3, [r4]
+	bl	execmem_store
+
+	ldr	r0, .LTERMIN_IF2
+	push	{r5}
+	bl	compile
+	pop	{r5}
+
+	bl	execmem_get
+	@ FILL: IF-TRUE Exit
+	sub	r1, r0, r5
+	sub	r1, #8
+	ldr	r3, helpers_b
+	asr	r1, r1, #2
+	bic	r1, #0xFF000000
+	orr	r3, r3, r1
+	str	r3, [r5]
+	@ No need to execmem_store, as we didn't write anything new
+
+	pop	{lr}
+	bx	lr
+
 .Lcompilation_pointer:
 	.local	compilation_pointer
 	.word	compilation_pointer
 	.lcomm	compilation_pointer, 4
+
+	.align	2
+.LTERMIN_IF1:
+	.word	.LCTERMIN_IF1
+.LTERMIN_IF2:
+	.word	.LCTERMIN_IF2
