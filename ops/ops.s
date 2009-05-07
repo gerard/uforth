@@ -4,19 +4,7 @@
 	.include	"syscalls.asi"
 	.include	"regdefs.asi"
 	.include	"lib.asi"
-
-	.macro vtest reg
-		tst	\reg, #0xff
-		tsteq	\reg, #0xf00
-		beq	panic
-	.endm
-	.macro VPOP reg
-		vtest	vsp
-		ldr	\reg, [vsp, #-4]!
-	.endm
-	.macro VPUSH reg
-		str	\reg, [vsp], #4
-	.endm
+	.include	"common.asi"
 
 	.section	.rodata
 	.align	2
@@ -41,7 +29,6 @@
 	.global	op_store	@ NAME: "!"
 	.global op_fetch	@ NAME: "@"
 	.global	op_swap		@ NAME: "SWAP"
-	.global	op_equals	@ NAME: "="
 	.global	op_type		@ NAME: "TYPE"
 	.global	op_bye		@ NAME: "BYE"
 
@@ -62,15 +49,6 @@ op_type:
 .Lop_type_end:
 	putchar	#0xa
 	pop	{lr}
-	bx	lr
-
-op_equals:
-	VPOP	r0
-	VPOP	r1
-	cmp	r0, r1
-	moveq	r0, #0		@ All bits CLEAR
-	movne	r0, #-1		@ All bits SET
-	VPUSH	r0
 	bx	lr
 
 op_allot:

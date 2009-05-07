@@ -10,13 +10,16 @@ use strict;
 my %symbols;
 my %comp_symbols;
 my %all_symbols;
-open IN, "ops.s" or die "Can't open ops.s: $!\n";
-while(<IN>) {
-	next if !/\.global\s+(\S+).+\"(.*)\"/;
-	# Maps symbols to symbol names
-	$symbols{$1} = $2;
+
+while (<ops/*.s>) {
+	open IN, $_ or die "Can't open ops.s: $!\n";
+	while(<IN>) {
+		next if !/\.global\s+(\S+).+\"(.*)\"/;
+		# Maps symbols to symbol names
+		$symbols{$1} = $2;
+	}
+	close IN;
 }
-close IN;
 
 open IN, "compile.s" or die "Can't open compile.s: $!\n";
 while(<IN>) {

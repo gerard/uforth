@@ -1,0 +1,12 @@
+	.macro vtest reg
+		tst	\reg, #0xff
+		tsteq	\reg, #0xf00
+		beq	panic
+	.endm
+	.macro VPOP reg
+		vtest	vsp
+		ldr	\reg, [vsp, #-4]!
+	.endm
+	.macro VPUSH reg
+		str	\reg, [vsp], #4
+	.endm

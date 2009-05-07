@@ -5,7 +5,8 @@ AS=arm-angstrom-linux-gnueabi-as
 LD=arm-angstrom-linux-gnueabi-ld
 
 BIN=uforth
-SRCS=$(filter-out init_sym.s, $(wildcard *.s)) init_sym.s
+SRCS=$(filter-out init_sym.s, $(wildcard *.s ops/*.s)) init_sym.s
+SRCS_OPS=$(wildcard ops/*.s)
 OBJS=$(patsubst %.s,%.o,$(SRCS))
 INCLUDES=$(wildcard *.asi)
 TESTS=$(wildcard t/TC-*)
@@ -17,7 +18,7 @@ else
 all: $(BIN) check
 endif
 
-init_sym.s: gen_symboltable.pl ops.s
+init_sym.s: gen_symboltable.pl $(SRCS_OPS) compile.s
 	./gen_symboltable.pl > $@
 
 $(BIN): $(OBJS) $(INCLUDES)
