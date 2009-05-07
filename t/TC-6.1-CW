@@ -35,10 +35,20 @@
     name    = semicolon
     notest  = No associated semantics: delimiter
 
+[0480]
+    name    = less-than
+    input   = 0 1 < 1 1 < 2 1 < .s DROP DROP DROP
+    output  = -1 0 0
+
 [0530]
     name    = equals
     input   = 0 1 = 2 2 = .s DROP DROP
-    output  = -1 0
+    output  = 0 -1
+
+[0540]
+    name    = greater-than
+    input   = 0 1 > 1 1 > 2 1 > .s DROP DROP DROP
+    output  = 0 0 -1
 
 [0650]
     name    = fetch
