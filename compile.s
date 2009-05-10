@@ -36,12 +36,6 @@ helpers_cmp_r0_r1:
 	cmp	r0, r1
 helpers_cmp_r0_0:
 	cmp	r0, #0
-helpers_bne:
-	.word	0x1A000000
-helpers_beq:
-	.word	0x0A000000
-helpers_b:
-	.word	0xEA000000
 helpers_ldr_r0_vsp:
 	ldr	r0, [vsp, #-4]!
 helpers_ldr_r1_vsp:
@@ -291,13 +285,7 @@ compile_if:
 	add	r0, #4			@ Space for branch instruction
 
 	@ FILL: IF-FALSE Entry
-	sub	r1, r0, r4
-	sub	r1, #8
-	ldr	r3, helpers_beq
-	asr	r1, r1, #2
-	bic	r1, #0xFF000000
-	orr	r3, r3, r1
-	str	r3, [r4]
+	GB	EQ, r4, r0
 
 	@ Was it IF .. THEN or IF .. ELSE .. THEN ?
 	ldr	r2, .LTERMIN_IF_THEN
@@ -320,14 +308,8 @@ compile_if:
 
 	bl	execmem_get
 	@ FILL: IF-TRUE Exit
-	sub	r1, r0, r5
-	sub	r1, #8
-	ldr	r3, helpers_b
-	asr	r1, r1, #2
-	bic	r1, #0xFF000000
-	orr	r3, r3, r1
-	str	r3, [r5]
-	@ No need to execmem_store, as we didn't write anything new
+	@ Note we don't need to execmem_store, as the space was already alloc
+	GB	AL, r5, r0
 
 .Lcompile_if_short:
 	pop	{lr}
@@ -374,20 +356,14 @@ compile_do:
 
 	@ Pop the counters, add 1 to the starting point and compare
 	bl	execmem_get
+
 	GPOP	#0x0, #0x3
 	ldr	r1, helpers_add_r0_1
 	str	r1, [r0], #4
 	ldr	r1, helpers_cmp_r0_r1
 	str	r1, [r0], #4
+	GB	NE, r0, r2
 
-	@ If NE, then jump back.  The address needs to be calculated.
-	ldr	r1, helpers_bne
-	sub	r2, r2, r0
-	sub	r2, #8
-	asr	r2, r2, #2
-	bic	r2, #0xFF000000
-	orr	r2, r2, r1
-	str	r2, [r0], #4
 	bl	execmem_store
 
 	pop	{lr}

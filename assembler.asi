@@ -19,3 +19,23 @@
 		orr	r1, #0x00BD0000
 		str	r1, [r0], #4
 	.endm
+
+	@ 'orig' is where the instruction will be written
+	.macro GB cond, orig, dest
+		sub	r1, \dest, \orig
+		sub	r1, #8
+		asr	r1, #2
+		bic	r1, #0xFF000000
+
+		.ifc \cond, EQ
+		orr	r1, #0x0A000000
+		.endif
+		.ifc \cond, NE
+		orr	r1, #0x1A000000
+		.endif
+		.ifc \cond, AL
+		orr	r1, #0xEA000000
+		.endif
+
+		str	r1, [\orig], #4
+	.endm
