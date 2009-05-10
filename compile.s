@@ -40,12 +40,8 @@ helpers_ldr_r0_vsp:
 	ldr	r0, [vsp, #-4]!
 helpers_ldr_r1_vsp:
 	ldr	r1, [vsp, #-4]!
-helpers_bx_lr:
-	bx	lr
 helpers_orr_r0_imm:
 	orr	r0, #0
-helpers_bx_r0:
-	bx	r0
 helpers_str_r0_vsp:
 	str	r0, [vsp], #4
 
@@ -136,8 +132,7 @@ compile_exit:
 	bl	execmem_get
 
 	GPOP	#0x40, #0x0
-	ldr	r1, helpers_bx_lr
-	str	r1, [r0], #4
+	GBX	#14
 
 	bl	execmem_store
 	pop	{lr}
@@ -229,8 +224,7 @@ compile:
 
 	@ r0 is finally constructed, branch and link
 	GMOV	R, #14, #15
-	ldr     r1, helpers_bx_r0
-	str     r1, [r0], #4
+	GBX	#0
 
 	bl	execmem_store
 	b	.Lcompile_restart

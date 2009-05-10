@@ -1,4 +1,5 @@
-	@ All these macros assume r0 to be the compilation pointer
+	@ All these macros assume r0 to be the compilation pointer, unless a
+	@ dest parameter is given.
 
 	@ Registers bitmaps are separated in 2 parameters to make them of an
 	@ immediate size.
@@ -38,6 +39,15 @@
 		.endif
 
 		str	r1, [\orig], #4
+	.endm
+
+	.macro GBX reg
+		mov	r1, #0xE1000000
+		orr	r1, #0x002F0000
+		orr	r1, #0x0000FF00
+		orr	r1, #0x00000010
+		orr	r1, \reg
+		str	r1, [r0], #4
 	.endm
 
 	@ 'type' is there to mark whether is a register or a immediate in
