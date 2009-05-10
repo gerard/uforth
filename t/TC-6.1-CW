@@ -97,3 +97,8 @@
     name    = SWAP
     input   = 15 16 SWAP .s DROP DROP
     output  = 16 15
+
+[2490]
+    name    = x-or
+    input   = HEX FF0 10FF XOR .
+    output  = 1F0F

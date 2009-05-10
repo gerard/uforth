@@ -16,6 +16,7 @@
 	.global	op_equals	@ NAME: "="
 	.global op_greater_than	@ NAME: ">"
 	.global op_less_than	@ NAME: "<"
+	.global	op_xor		@ NAME: "XOR"
 
 op_equals:
 	STK_CMP	r0, r1
@@ -35,5 +36,12 @@ op_less_than:
 	STK_CMP	r0, r1
 	movlt	r0, #-1
 	movpl	r0, #0
+	VPUSH	r0
+	bx	lr
+
+op_xor:
+	VPOP	r0
+	VPOP	r1
+	eor	r0, r0, r1
 	VPUSH	r0
 	bx	lr
