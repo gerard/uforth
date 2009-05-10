@@ -42,14 +42,10 @@ helpers_ldr_r1_vsp:
 	ldr	r1, [vsp, #-4]!
 helpers_bx_lr:
 	bx	lr
-helpers_mov_r0_0:
-	mov	r0, #0
 helpers_orr_r0_imm:
 	orr	r0, #0
 helpers_bx_r0:
 	bx	r0
-helpers_mov_lr_pc:
-	mov	lr, pc
 helpers_str_r0_vsp:
 	str	r0, [vsp], #4
 
@@ -57,8 +53,9 @@ helpers_str_r0_vsp:
 @ r0 is moved to next available location
 compile_load32:
 	# Set r0 to zero
-	ldr	r2, helpers_mov_r0_0
-	str	r2, [r0], #4
+	push	{r1}
+	GMOV	I, #0, #0
+	pop	{r1}
 
 	# LSB
 	ands	r3, r1, #0xff
@@ -231,10 +228,9 @@ compile:
 	bl	compile_load32
 
 	# r0 is finally constructed, branch and link
-	ldr	r1, helpers_mov_lr_pc
-	str	r1, [r0], #4
-	ldr	r1, helpers_bx_r0
-	str	r1, [r0], #4
+	GMOV	R, #14, #15
+	ldr     r1, helpers_bx_r0
+	str     r1, [r0], #4
 
 	bl	execmem_store
 	b	.Lcompile_restart

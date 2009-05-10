@@ -39,3 +39,21 @@
 
 		str	r1, [\orig], #4
 	.endm
+
+	@ 'type' is there to mark whether is a register or a immediate in
+	@ param.  Note that when source is immediate it should fit on 8 bits.
+	.macro GMOV type, dest, source
+		mov	r1, \dest
+		lsl	r1, #12
+		orr	r1, #0xE0000000
+
+		.ifc \type, R
+		orr	r1, #0x01A00000
+		.endif
+		.ifc \type, I
+		orr	r1, #0x03A00000
+		.endif
+
+		orr	r1, \source
+		str	r1, [r0], #4
+	.endm
