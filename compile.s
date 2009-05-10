@@ -52,44 +52,44 @@ helpers_str_r0_vsp:
 @ Compiles a load operation of r1 on r0
 @ r0 is moved to next available location
 compile_load32:
+	mov	r2, r1
+
 	# Set r0 to zero
-	push	{r1}
 	GMOV	I, #0, #0
-	pop	{r1}
 
 	# LSB
-	ands	r3, r1, #0xff
+	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_2
-	ldr	r2, helpers_orr_r0_imm
-	orr	r2, r3
-	str	r2, [r0], #4
+	ldr	r1, helpers_orr_r0_imm
+	orr	r1, r3
+	str	r1, [r0], #4
 
 .Lcompile_load32_BYTE_2:
-	ror	r1, #8
-	ands	r3, r1, #0xff
+	ror	r2, #8
+	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_3
-	ldr	r2, helpers_orr_r0_imm
-	orr	r2, r3
-	orr	r2, #0xc00
-	str	r2, [r0], #4
+	ldr	r1, helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0xc00
+	str	r1, [r0], #4
 
 .Lcompile_load32_BYTE_3:
-	ror	r1, #8
-	ands	r3, r1, #0xff
+	ror	r2, #8
+	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_4
-	ldr	r2, helpers_orr_r0_imm
-	orr	r2, r3
-	orr	r2, #0x800
-	str	r2, [r0], #4
+	ldr	r1, helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0x800
+	str	r1, [r0], #4
 
 .Lcompile_load32_BYTE_4:	# aka, MSB
-	ror	r1, #8
-	ands	r3, r1, #0xff
+	ror	r2, #8
+	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_end
-	ldr	r2, helpers_orr_r0_imm
-	orr	r2, r3
-	orr	r2, #0x400
-	str	r2, [r0], #4
+	ldr	r1, helpers_orr_r0_imm
+	orr	r1, r3
+	orr	r1, #0x400
+	str	r1, [r0], #4
 
 .Lcompile_load32_end:
 	bx	lr
