@@ -12,11 +12,12 @@ INCLUDES=$(wildcard *.asi)
 TESTS=$(wildcard t/TC-*)
 CTAGS=$(shell which ctags)
 
+BUILD=clean-ws $(BIN) check check-license
 ifdef CTAGS
-all: clean-ws $(BIN) tags check check-license
-else
-all: clean-ws $(BIN) check check-license
+BUILD+=tags
 endif
+
+all: $(BUILD)
 
 init_sym.s: gen_symboltable.pl $(SRCS_OPS) compile.s
 	./gen_symboltable.pl > $@
@@ -46,4 +47,4 @@ check: $(BIN) $(TESTS)
 tags:
 	$(CTAGS) -R .
 
-.PHONY: clean clean-ws
+.PHONY: clean clean-ws check check-license
