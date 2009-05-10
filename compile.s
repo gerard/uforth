@@ -1,6 +1,7 @@
 @ Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
 @ This program is open source.  For license terms, see the LICENSE file.
 
+	.include	"assembler.asi"
 	.include	"regdefs.asi"
 	.include	"syscalls.asi"
 	.include	"lib.asi"
@@ -29,16 +30,8 @@
 
 @ This shouldn't be necessary if we would assemble ourselves, but lets allow
 @ the system assembler do it for us: we are lazy.
-helpers_push_r0_r1:
-	push	{r0, r1}
-helpers_pop_r0_r1:
-	pop	{r0, r1}
 helpers_add_r0_1:
 	add	r0, #1
-helpers_push_lr:
-	push	{lr}
-helpers_pop_lr:
-	pop	{lr}
 helpers_cmp_r0_r1:
 	cmp	r0, r1
 helpers_cmp_r0_0:
@@ -138,8 +131,7 @@ compile_entry:
 	push	{lr}
 
 	bl	execmem_get
-	ldr	r1, helpers_push_lr
-	str	r1, [r0], #4
+	GPUSH	#0x40, #0x0
 	bl	execmem_store
 
 	@ Our return value
@@ -152,8 +144,7 @@ compile_exit:
 	push	{lr}
 	bl	execmem_get
 
-	ldr	r1, helpers_pop_lr
-	str	r1, [r0], #4
+	GPOP	#0x40, #0x0
 	ldr	r1, helpers_bx_lr
 	str	r1, [r0], #4
 
@@ -358,8 +349,7 @@ compile_do:
 	ldr	r1, helpers_ldr_r1_vsp
 	str	r1, [r0], #4
 	mov	r2, r0			@ This is where we jump back from LOOP
-	ldr	r1, helpers_push_r0_r1
-	str	r1, [r0], #4
+	GPUSH	#0x0, #0x3
 	bl	execmem_store
 
 	push	{r2}
@@ -384,8 +374,7 @@ compile_do:
 
 	@ Pop the counters, add 1 to the starting point and compare
 	bl	execmem_get
-	ldr	r1, helpers_pop_r0_r1
-	str	r1, [r0], #4
+	GPOP	#0x0, #0x3
 	ldr	r1, helpers_add_r0_1
 	str	r1, [r0], #4
 	ldr	r1, helpers_cmp_r0_r1

@@ -1,0 +1,21 @@
+	@ All these macros assume r0 to be the compilation pointer
+
+	@ Registers bitmaps are separated in 2 parameters to make them of an
+	@ immediate size.
+	.macro GPUSH regs_hi, regs_lo
+		mov	r1, \regs_hi
+		lsl	r1, #8
+		orr	r1, \regs_lo
+		orr	r1, #0xE9000000
+		orr	r1, #0x002D0000
+		str	r1, [r0], #4
+	.endm
+
+	.macro GPOP regs_hi, regs_lo
+		mov	r1, \regs_hi
+		lsl	r1, #8
+		orr	r1, \regs_lo
+		orr	r1, #0xE8000000
+		orr	r1, #0x00BD0000
+		str	r1, [r0], #4
+	.endm
