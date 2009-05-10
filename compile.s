@@ -7,10 +7,15 @@
 
 	.section	.rodata
 	.align	2
+
 .LCTERMIN_IF_ELSE:
 	.asciz	"ELSE"
 .LCTERMIN_IF_THEN:
 	.asciz	"THEN"
+	.ascii	"\x00"
+
+.LCTERMIN_DO_LOOP:
+	.asciz	"LOOP"
 	.ascii	"\x00"
 
 	.text
@@ -19,21 +24,34 @@
 	.global	compile_entry
 	.global	compile_exit
 	.global	compile_if	@ NAME: "IF"
+	.global	compile_do	@ NAME: "DO"
 
 @ This shouldn't be necessary if we would assemble ourselves, but lets allow
 @ the system assembler do it for us: we are lazy.
+helpers_push_r0_r1:
+	push	{r0, r1}
+helpers_pop_r0_r1:
+	pop	{r0, r1}
+helpers_add_r0_1:
+	add	r0, #1
 helpers_push_lr:
 	push	{lr}
 helpers_pop_lr:
 	pop	{lr}
+helpers_cmp_r0_r1:
+	cmp	r0, r1
 helpers_cmp_r0_0:
 	cmp	r0, #0
+helpers_bne:
+	.word	0x1A000000
 helpers_beq:
 	.word	0x0A000000
 helpers_b:
 	.word	0xEA000000
 helpers_ldr_r0_vsp:
 	ldr	r0, [vsp, #-4]!
+helpers_ldr_r1_vsp:
+	ldr	r1, [vsp, #-4]!
 helpers_bx_lr:
 	bx	lr
 helpers_mov_r0_0:
@@ -328,8 +346,52 @@ compile_if:
 	.word	compilation_pointer
 	.lcomm	compilation_pointer, 4
 
+compile_do:
+	push	{lr}
+
+	@ $r0 gets the starting point and $r1 the end.  The cmp is not done
+	@ until the end though.
+	bl	execmem_get
+	ldr	r1, helpers_ldr_r0_vsp
+	str	r1, [r0], #4
+	ldr	r1, helpers_ldr_r1_vsp
+	str	r1, [r0], #4
+	mov	r2, r0			@ This is where we jump back from LOOP
+	ldr	r1, helpers_push_r0_r1
+	str	r1, [r0], #4
+	bl	execmem_store
+
+	push	{r2}
+	ldr	r0, .LTERMIN_DO_LOOP
+	bl	compile
+	pop	{r2}
+
+	@ Pop the counters, add 1 to the starting point and compare
+	bl	execmem_get
+	ldr	r1, helpers_pop_r0_r1
+	str	r1, [r0], #4
+	ldr	r1, helpers_add_r0_1
+	str	r1, [r0], #4
+	ldr	r1, helpers_cmp_r0_r1
+	str	r1, [r0], #4
+
+	@ If NE, then jump back.  The address needs to be calculated.
+	ldr	r1, helpers_bne
+	sub	r2, r2, r0
+	sub	r2, #8
+	asr	r2, r2, #2
+	bic	r2, #0xFF000000
+	orr	r2, r2, r1
+	str	r2, [r0], #4
+	bl	execmem_store
+
+	pop	{lr}
+	bx	lr
+
 	.align	2
 .LTERMIN_IF_ELSE:
 	.word	.LCTERMIN_IF_ELSE
 .LTERMIN_IF_THEN:
 	.word	.LCTERMIN_IF_THEN
+.LTERMIN_DO_LOOP:
+	.word	.LCTERMIN_DO_LOOP

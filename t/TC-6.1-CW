@@ -64,6 +64,11 @@
     input   = 9 15 32 HEX DECIMAL .s DROP DROP DROP
     output  = 9 15 32
 
+[1240]
+    name    = DO
+    input   = : TC1240 3 0 DO 1 LOOP ; TC1240 .s DROP DROP DROP
+    output  = 1 1 1
+
 [1260]
     name    = DROP
     notest  = See 1170
