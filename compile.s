@@ -54,10 +54,10 @@ helpers_str_r0_vsp:
 compile_load32:
 	mov	r2, r1
 
-	# Set r0 to zero
+	@ Set r0 to zero
 	GMOV	I, #0, #0
 
-	# LSB
+	@ LSB
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_2
 	ldr	r1, helpers_orr_r0_imm
@@ -82,7 +82,7 @@ compile_load32:
 	orr	r1, #0x800
 	str	r1, [r0], #4
 
-.Lcompile_load32_BYTE_4:	# aka, MSB
+.Lcompile_load32_BYTE_4:	@ aka, MSB
 	ror	r2, #8
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_end
@@ -150,10 +150,10 @@ compile_exit:
 compile:
 	push	{lr}
 
-	# Move delimiter somewhere else
+	@ Move delimiter somewhere else
 	mov	r8, r0
 
-	# Save initial exec point in case we need to backup
+	@ Save initial exec point in case we need to backup
 	bl	execmem_get
 	push	{r0}
 
@@ -227,7 +227,7 @@ compile:
 	bl	execmem_get
 	bl	compile_load32
 
-	# r0 is finally constructed, branch and link
+	@ r0 is finally constructed, branch and link
 	GMOV	R, #14, #15
 	ldr     r1, helpers_bx_r0
 	str     r1, [r0], #4

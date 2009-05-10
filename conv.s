@@ -24,7 +24,7 @@ parse_num:
 	pop	{r1}
 	mov	r2, #0
 
-	# Positive or negative number?
+	@ Positive or negative number?
 	ldrb	r0, [r5]
 	cmp	r0, #0x2D		@ '-'
 	addeq	r5, #1
