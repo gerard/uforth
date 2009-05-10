@@ -13,9 +13,9 @@ TESTS=$(wildcard t/TC-*)
 CTAGS=$(shell which ctags)
 
 ifdef CTAGS
-all: clean-ws $(BIN) tags check
+all: clean-ws $(BIN) tags check check-license
 else
-all: clean-ws $(BIN) check
+all: clean-ws $(BIN) check check-license
 endif
 
 init_sym.s: gen_symboltable.pl $(SRCS_OPS) compile.s
@@ -31,6 +31,11 @@ clean-ws:
 
 clean:
 	rm -f $(BIN) $(OBJS) init_sym.s tags
+
+check-license:
+	@for FILE in `git-ls-files | sed 's/\.gitignore//'` ; do \
+		grep -q Copyright $${FILE} || echo "W: $${FILE} misses copyright statement" ; \
+	done ;
 
 check: $(BIN) $(TESTS)
 	@for TC in $(TESTS); do \
