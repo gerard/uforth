@@ -78,6 +78,11 @@
     input   = 3 DUP .s DROP DROP
     output  = 3 3
 
+[1680]
+    name    = I
+    input   = : TC1680 3 0 DO I LOOP ; TC1680 .s DROP DROP DROP
+    output  = 0 1 2
+
 [1700a]
     name    = IF I-E-T
     input   = : TC1700a IF 1 ELSE -1 THEN ; 0 TC1700a 2 TC1700a .s DROP DROP

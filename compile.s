@@ -16,6 +16,7 @@
 
 .LCTERMIN_DO_LOOP:
 	.asciz	"LOOP"
+	.asciz	"I"
 	.ascii	"\x00"
 
 	.text
@@ -362,8 +363,23 @@ compile_do:
 	bl	execmem_store
 
 	push	{r2}
+
+.Lcompile_do_compile:
 	ldr	r0, .LTERMIN_DO_LOOP
 	bl	compile
+
+	ldr	r1, .LTERMIN_DO_LOOP
+	cmp	r1, r0
+	beq	.Lcompile_do_done
+
+	@ No other terminator defined other than I
+	bl	execmem_get
+	ldr	r1, helpers_str_r0_vsp
+	str	r1, [r0], #4
+	bl	execmem_store
+	b	.Lcompile_do_compile
+
+.Lcompile_do_done:
 	pop	{r2}
 
 	@ Pop the counters, add 1 to the starting point and compare
@@ -395,3 +411,4 @@ compile_do:
 	.word	.LCTERMIN_IF_THEN
 .LTERMIN_DO_LOOP:
 	.word	.LCTERMIN_DO_LOOP
+.LTERMIN_DO_I:
