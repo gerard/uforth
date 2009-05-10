@@ -67,3 +67,18 @@
 		orr	r1, \source
 		str	r1, [r0], #4
 	.endm
+
+	@ For our purpouses we just orr immediates with immediate shifts
+	.macro GORR dest, reg, imm, shift=0
+		mov	r1, \reg
+		lsl	r1, #4
+		orr	r1, \dest
+		lsl	r1, #4
+		orr	r1, \shift
+		lsl	r1, #8
+		orr	r1, \imm
+
+		orr	r1, #0xE3000000
+		orr	r1, #0x00800000
+		str	r1, [r0], #4
+	.endm

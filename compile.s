@@ -40,8 +40,6 @@ helpers_ldr_r0_vsp:
 	ldr	r0, [vsp, #-4]!
 helpers_ldr_r1_vsp:
 	ldr	r1, [vsp, #-4]!
-helpers_orr_r0_imm:
-	orr	r0, #0
 helpers_str_r0_vsp:
 	str	r0, [vsp], #4
 
@@ -56,36 +54,25 @@ compile_load32:
 	@ LSB
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_2
-	ldr	r1, helpers_orr_r0_imm
-	orr	r1, r3
-	str	r1, [r0], #4
+	GORR	#0, #0, r3, #0
 
 .Lcompile_load32_BYTE_2:
 	ror	r2, #8
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_3
-	ldr	r1, helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0xc00
-	str	r1, [r0], #4
+	GORR	#0, #0, r3, #0xC
 
 .Lcompile_load32_BYTE_3:
 	ror	r2, #8
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_BYTE_4
-	ldr	r1, helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0x800
-	str	r1, [r0], #4
+	GORR	#0, #0, r3, #0x8
 
 .Lcompile_load32_BYTE_4:	@ aka, MSB
 	ror	r2, #8
 	ands	r3, r2, #0xff
 	beq	.Lcompile_load32_end
-	ldr	r1, helpers_orr_r0_imm
-	orr	r1, r3
-	orr	r1, #0x400
-	str	r1, [r0], #4
+	GORR	#0, #0, r3, #0x4
 
 .Lcompile_load32_end:
 	bx	lr
