@@ -115,7 +115,7 @@ putchar:
 	str	r0, [r1]
 	write	#1, r1, #1
 	bx	lr
-	
+
 sbrk:
 	mov	r1, r0
 	brk	#0

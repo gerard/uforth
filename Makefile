@@ -13,9 +13,9 @@ TESTS=$(wildcard t/TC-*)
 CTAGS=$(shell which ctags)
 
 ifdef CTAGS
-all: $(BIN) tags check
+all: clean-ws $(BIN) tags check
 else
-all: $(BIN) check
+all: clean-ws $(BIN) check
 endif
 
 init_sym.s: gen_symboltable.pl $(SRCS_OPS) compile.s
@@ -23,6 +23,11 @@ init_sym.s: gen_symboltable.pl $(SRCS_OPS) compile.s
 
 $(BIN): $(OBJS) $(INCLUDES)
 	$(LD) $(OBJS) -o uforth
+
+clean-ws:
+	@for FILE in `git-ls-files`; do \
+		sed -i "s/[ \t]*$$//" $${FILE} ; \
+	done ;
 
 clean:
 	rm -f $(BIN) $(OBJS) init_sym.s tags
@@ -36,4 +41,4 @@ check: $(BIN) $(TESTS)
 tags:
 	$(CTAGS) -R .
 
-.PHONY: clean
+.PHONY: clean clean-ws
