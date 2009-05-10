@@ -3,6 +3,11 @@
 
 	@ All these macros assume r0 to be the compilation pointer, unless a
 	@ dest parameter is given.
+	@
+	@ Note the difference of giving a register by name (r3) or by number
+	@ (#3).  The first will use r3's value at compilation time as an
+	@ immediate at execution time.  The second will use r3 as it is in
+	@ the execution context.
 
 	@ Registers bitmaps are separated in 2 parameters to make them of an
 	@ immediate size.
