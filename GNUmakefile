@@ -1,8 +1,8 @@
 # Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
 # This program is open source.  For license terms, see the LICENSE file.
 
-AS=arm-angstrom-linux-gnueabi-as
-LD=arm-angstrom-linux-gnueabi-ld
+AS=arm-linux-gnueabi-as
+LD=arm-linux-gnueabi-ld
 
 BIN=uforth
 SRCS=$(filter-out init_sym.s, $(wildcard *.s ops/*.s)) init_sym.s
