@@ -52,21 +52,30 @@
       A Forth interpreter in ARM assembly
     </div>
 
-    <p>uforth is a small project meant for my spare time. My goal is to have some, more or less, maintanable ASM code base and while I’m on it, I try to attach to DPANS94, altough violations don’t bother me right now, other than missing functionality.</p><h2>Dependencies</h2>
+    <p><b>uforth</b> is a small project meant for my spare time. My goal is to have some, more or less, maintanable ASM code base and while I’m on it, I try to attach to <a href="http://www.taygeta.com/forth/dpans.htm">DPANS94</a>, altough violations don’t bother me right now, other than missing functionality.</p><h2>Dependencies</h2>
 <p>No dependencies are needed to run the binary on an arm machine. Not even a C library. The only supported platform is Linux.
 
 For building you are going to need an assembler. You can get a cross binutils here:
- * deb http://www.emdebian.org/debian lenny main
+<pre>
+  deb http://www.emdebian.org/debian lenny main
+</pre>
 
 To run it on PC, you can use qemu. If you want to run the tests you need the following perl modules:
- * Config::IniFiles
- * Expect</p>
+<ul>
+  <li>Config::IniFiles</li>
+  <li>Expect</li>
+</ul>
+
 <h2>Install</h2>
 <p>To compile:
- * make uforth
+<pre>
+  make uforth
+</pre>
 
 To run the tests:
- * make check
+<pre>
+  make check
+</pre>
 
 To do both, just run make</p>
 <h2>License</h2>
