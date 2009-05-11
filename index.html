@@ -55,7 +55,7 @@
     <p><b>uforth</b> is a small project meant for my spare time. My goal is to have some, more or less, maintanable ASM code base and while I’m on it, I try to attach to <a href="http://www.taygeta.com/forth/dpans.htm">DPANS94</a>, altough violations don’t bother me right now, other than missing functionality.</p><h2>Dependencies</h2>
 <p>No dependencies are needed to run the binary on an arm machine. Not even a C library. The only supported platform is Linux.
 
-For building you are going to need an assembler. You can get a cross binutils here:
+For building you are going to need an assembler. My toolchain ishere. 
 <pre>
   deb http://www.emdebian.org/debian lenny main
 </pre>
@@ -66,20 +66,31 @@ To run it on PC, you can use qemu. If you want to run the tests you need the fol
   <li>Expect</li>
 </ul>
 
-<h2>Install</h2>
-<p>To compile:
+<h2>Compilation</h2>
+<p>If you have the cross utils from emdebian (as and ld), this should work:
 <pre>
-  make uforth
+$ make uforth
+</pre>
+
+If you have a different toolchain, define $AS and $LD, like this:
+<pre>
+$ make uforth AS=/path/to/as LD=/path/to/ld
 </pre>
 
 To run the tests:
 <pre>
-  make check
+$ make check
 </pre>
 
-To do both, just run make</p>
+To just run everything:
+<pre>
+$ make
+</pre>
+</p>
 <h2>License</h2>
-<p>Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
+<p>
+<pre>
+Copyright (c) 2009, Gerard Lledo Vives <gerard.lledo@gmail.com>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -103,11 +114,9 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+</pre>
 <h2>Authors</h2>
 <p>Gerard Lledo (gerard.lledo@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Gerard Lledo (gerard.lledo@gmail.com)<br/>      </p>
-
 
     <h2>Download</h2>
     <p>
