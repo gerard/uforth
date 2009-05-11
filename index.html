@@ -55,9 +55,15 @@
     <p><b>uforth</b> is a small project meant for my spare time. My goal is to have some, more or less, maintanable ASM code base and while I’m on it, I try to attach to <a href="http://www.taygeta.com/forth/dpans.htm">DPANS94</a>, altough violations don’t bother me right now, other than missing functionality.</p><h2>Dependencies</h2>
 <p>No dependencies are needed to run the binary on an arm machine. Not even a C library. The only supported platform is Linux.
 
-For building you are going to need an assembler. My toolchain ishere. 
+For building you are going to need an assembler. This is the repository that store the toolchain I use.
 <pre>
-  deb http://www.emdebian.org/debian lenny main
+deb http://www.emdebian.org/debian lenny main
+</pre>
+
+Add it to your sources.list and then run:
+<pre>
+$ sudo apt-get update
+$ sudo apt-get install binutils-arm-linux-gnueabi
 </pre>
 
 To run it on PC, you can use qemu. If you want to run the tests you need the following perl modules:
@@ -134,19 +140,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     </div>
     
   </div>
-
   
-
-    <!-- Google Analytics -->
-    <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-    </script>
-    <script type="text/javascript">
-        try {
-            var pageTracker = _gat._getTracker("UA-8783913-2");
-            pageTracker._trackPageview();
-        } catch(err) {}
-    </script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-8783913-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
 </body>
 </html>
